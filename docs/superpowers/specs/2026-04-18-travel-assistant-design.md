@@ -269,7 +269,8 @@ The architecture has been pragmatically updated to avoid the costs and rate limi
 
 - The system will rely on local mock JSON files (`data/sample_*.json`) containing curated Indian destinations, hotel tiers, and flight costs.
 - A free web search tool like DuckDuckGo or Tavily will be integrated for live data enrichment without consuming API budget.
-  > **Demo talking point:** "In production, we'd swap mock data for Skyscanner API / Google Places API."
+
+> **Demo talking point:** "In production, we'd swap mock data for Skyscanner API / Google Places API."
 
 ---
 
@@ -293,8 +294,11 @@ The architecture has been pragmatically updated to avoid the costs and rate limi
 
 - **State Management:** Know the state that flows between agents — they will ask _"what happens if an agent fails?"_
   Answer: errors accumulate in `state["errors"]`, Planner can retry or skip.
+
 - **Architecture:** Know why LangGraph over CrewAI (control, debuggability, explicit state, production-readiness).
+
 - **Frontend:** Know why Streamlit (fastest frontend for ML demos, built-in support for streaming the `StateGraph` execution).
+
 - **Upgrade Path:** Swap mock data → real APIs, Streamlit → Next.js/React frontend, Render → GCP/AWS.
 
 ---
