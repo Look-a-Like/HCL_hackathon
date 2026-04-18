@@ -111,10 +111,12 @@ class TravelState(TypedDict):
 | Agent framework | **LangGraph** | Explicit state, conditional routing, debuggable |
 | Orchestrator LLM | **claude-sonnet-4-6** | Best reasoning for planning/coordination |
 | Worker LLM | **claude-haiku-4-5** | Fast, cheap for generation tasks |
-| Frontend | **Streamlit** | Fastest to build, streaming support |
+| Backend | **FastAPI** | Python, streams LangGraph agent events via SSE |
+| Frontend | **Next.js + shadcn/ui** | Professional UI, built-in streaming, Vercel AI SDK |
 | Travel data | **Mock JSON + web search tool** | No paid API budget needed |
-| Deployment | **Render (free tier)** | Easier than Vercel for Python backend |
-| Language | **Python 3.11+** | ML standard |
+| Frontend deploy | **Vercel** | One-command deploy, free tier |
+| Backend deploy | **Render (free tier)** | Python backend, easy Docker deploy |
+| Language | **Python 3.11+ / TypeScript** | ML backend / React frontend |
 
 ---
 
@@ -122,42 +124,58 @@ class TravelState(TypedDict):
 
 ```
 HCL_hackathon/
-├── app.py                          # Streamlit frontend entry point
-├── requirements.txt
-├── .env                            # API keys (ANTHROPIC_API_KEY)
-├── .env.example                    # Template (committed)
 │
-├── src/
+├── backend/                            # Python — FastAPI + LangGraph
+│   ├── main.py                         # FastAPI app, /plan SSE endpoint
+│   ├── requirements.txt
+│   ├── .env                            # ANTHROPIC_API_KEY
+│   ├── .env.example
+│   │
 │   ├── graph/
-│   │   ├── state.py                # TravelState TypedDict definition
-│   │   ├── workflow.py             # LangGraph StateGraph assembly
-│   │   └── router.py              # Planner routing logic
+│   │   ├── state.py                    # TravelState TypedDict
+│   │   ├── workflow.py                 # LangGraph StateGraph assembly
+│   │   └── router.py                   # Planner routing logic
 │   │
 │   ├── agents/
-│   │   ├── planner.py              # Supervisor agent — parses input, routes
-│   │   ├── destination.py          # Destination research agent
-│   │   ├── budget.py               # Budget optimization agent
-│   │   ├── itinerary.py            # Day-by-day itinerary agent
-│   │   ├── booking.py              # Booking assistant agent
-│   │   └── local_experience.py     # Local experience agent
+│   │   ├── planner.py
+│   │   ├── destination.py
+│   │   ├── budget.py
+│   │   ├── itinerary.py
+│   │   ├── booking.py
+│   │   └── local_experience.py
 │   │
 │   ├── tools/
-│   │   ├── search.py               # Web search tool (DuckDuckGo or Tavily free)
-│   │   ├── travel_data.py          # Mock travel data (flights, hotels, costs)
-│   │   └── formatter.py            # Format final plan for display
+│   │   ├── search.py                   # DuckDuckGo free search
+│   │   └── travel_data.py              # Mock JSON loader
 │   │
-│   └── prompts/
-│       ├── planner_prompt.py
-│       ├── destination_prompt.py
-│       ├── budget_prompt.py
-│       ├── itinerary_prompt.py
-│       ├── booking_prompt.py
-│       └── local_experience_prompt.py
+│   ├── prompts/
+│   │   └── *.py                        # One file per agent
+│   │
+│   └── data/
+│       ├── destinations.json
+│       ├── hotels.json
+│       └── flights.json
 │
-└── data/
-    ├── sample_destinations.json    # Curated destination data
-    ├── sample_hotels.json          # Mock hotel options
-    └── sample_flights.json         # Mock flight options
+└── frontend/                           # Next.js — React + shadcn/ui
+    ├── app/
+    │   ├── page.tsx                    # Home — chat input
+    │   ├── layout.tsx
+    │   └── api/
+    │       └── plan/
+    │           └── route.ts            # Proxies to FastAPI (avoids CORS)
+    │
+    ├── components/
+    │   ├── ChatInput.tsx               # User query input
+    │   ├── AgentProgress.tsx           # Live agent step tracker
+    │   ├── ItineraryCard.tsx           # Day-by-day display
+    │   ├── BudgetBreakdown.tsx         # Budget pie/bar chart
+    │   └── BookingOptions.tsx          # Flight + hotel cards
+    │
+    ├── lib/
+    │   └── stream.ts                   # SSE stream reader utility
+    │
+    ├── package.json
+    └── .env.local                      # NEXT_PUBLIC_API_URL
 ```
 
 ---
@@ -167,12 +185,13 @@ HCL_hackathon/
 Build in this order — each step produces something runnable:
 
 ### Phase 1 — Skeleton (get something running first)
-1. `src/graph/state.py` — define `TravelState`
-2. `src/agents/planner.py` — just parse user input, extract budget/destination/dates
-3. `src/graph/workflow.py` — single-node graph, planner only
-4. `app.py` — Streamlit text input → planner output displayed
+1. `backend/graph/state.py` — define `TravelState`
+2. `backend/agents/planner.py` — parse user input, extract budget/destination/dates
+3. `backend/graph/workflow.py` — single-node graph, planner only
+4. `backend/main.py` — FastAPI `/plan` endpoint streaming SSE
+5. `frontend/` — `npx create-next-app`, install shadcn/ui, simple text input → fetch `/plan`
 
-**Verify:** App runs, user types a request, planner extracts structured data.
+**Verify:** App runs, user types a request, planner extracts structured data streamed to browser.
 
 ### Phase 2 — Core Agents
 5. `src/agents/destination.py` — given destination, return attractions + info
@@ -243,14 +262,42 @@ def destination_agent(state: TravelState) -> TravelState:
     return state
 ```
 
-### Streamlit Streaming Pattern
+### FastAPI SSE Streaming Pattern
 
 ```python
-# app.py
-with st.spinner("Planner Agent analyzing your request..."):
-    for step in app.stream(initial_state):
-        agent_name = list(step.keys())[0]
-        st.success(f"✓ {agent_name} complete")
+# backend/main.py
+from fastapi import FastAPI
+from fastapi.responses import StreamingResponse
+import json
+
+app = FastAPI()
+
+@app.post("/plan")
+async def plan(request: PlanRequest):
+    async def event_stream():
+        for step in langgraph_app.stream(initial_state):
+            agent_name = list(step.keys())[0]
+            yield f"data: {json.dumps({'agent': agent_name, 'state': step})}\n\n"
+    return StreamingResponse(event_stream(), media_type="text/event-stream")
+```
+
+### Next.js SSE Consumer Pattern
+
+```typescript
+// frontend/lib/stream.ts
+export async function streamPlan(query: string, onChunk: (data: any) => void) {
+  const res = await fetch("/api/plan", { method: "POST", body: JSON.stringify({ query }) });
+  const reader = res.body!.getReader();
+  const decoder = new TextDecoder();
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    const lines = decoder.decode(value).split("\n\n");
+    for (const line of lines) {
+      if (line.startsWith("data: ")) onChunk(JSON.parse(line.slice(6)));
+    }
+  }
+}
 ```
 
 ---
