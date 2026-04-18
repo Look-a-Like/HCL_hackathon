@@ -1,0 +1,196 @@
+{
+  "destinations": [
+    {
+      "name": "Goa",
+      "type": "Beach",
+      "state": "Goa",
+      "description": "Known for its beautiful beaches, vibrant nightlife, and Portuguese heritage",
+      "attractions": [
+        {"name": "Baga Beach", "type": "Beach", "description": "Popular beach with water sports and nightlife"},
+        {"name": "Fort Aguada", "type": "Historical", "description": "17th century Portuguese fort with lighthouse"},
+        {"name": "Dudhsagar Falls", "type": "Waterfall", "description": "Four-tiered waterfall in the Western Ghats"},
+        {"name": "Anjuna Flea Market", "type": "Shopping", "description": "Famous Wednesday market for souvenirs"},
+        {"name": "Se Cathedral", "type": "Church", "description": "Oldest and largest church in Asia"}
+      ],
+      "best_season": "October to March",
+      "avg_daily_cost": 2500,
+      "keywords": ["beaches", "nightlife", "party", "portuguese", "seafood"]
+    },
+    {
+      "name": "Manali",
+      "type": "Mountain",
+      "state": "Himachal Pradesh",
+      "description": "A beautiful hill station in the Himalayas known for adventure sports",
+      "attractions": [
+        {"name": "Rohtang Pass", "type": "Pass", "description": "High mountain pass with snow activities"},
+        {"name": "Hadimba Temple", "type": "Temple", "description": "Ancient wooden temple surrounded by cedar forest"},
+        {"name": "Solang Valley", "type": "Valley", "description": "Adventure hub for paragliding, skiing, zorbing"},
+        {"name": "Old Manali", "type": "Village", "description": "Bohemian area with cafes and markets"},
+        {"name": "Beas River", "type": "River", "description": "River known for rafting and trout fishing"}
+      ],
+      "best_season": "May to June, December to February",
+      "avg_daily_cost": 2000,
+      "keywords": ["mountains", "adventure", "snow", "trekking", "nature"]
+    },
+    {
+      "name": "Jaipur",
+      "type": "Cultural",
+      "state": "Rajasthan",
+      "description": "The Pink City, famous for forts, palaces, and rich culture",
+      "attractions": [
+        {"name": "Hawa Mahal", "type": "Palace", "description": "Iconic palace with 953 windows"},
+        {"name": "Amer Fort", "type": "Fort", "description": "UNESCO site with stunning architecture"},
+        {"name": "City Palace", "type": "Palace", "description": "Royal residence with museums"},
+        {"name": "Jantar Mantar", "type": "Observatory", "description": "Astronomical instruments museum"},
+        {"name": "Nahargarh Fort", "type": "Fort", "description": "Fort with panoramic city views"}
+      ],
+      "best_season": "October to March",
+      "avg_daily_cost": 2200,
+      "keywords": ["heritage", "forts", "palaces", "culture", "shopping"]
+    },
+    {
+      "name": "Kerala",
+      "type": "Backwaters",
+      "state": "Kerala",
+      "description": "God's Own Country with serene backwaters and ayurveda",
+      "attractions": [
+        {"name": "Alleppey Backwaters", "type": "Backwaters", "description": "Famous houseboat cruise through lagoons"},
+        {"name": "Kumarakom", "type": "Backwaters", "description": "Serene backwater destination with bird sanctuary"},
+        {"name": "Munnar", "type": "Hill Station", "description": "Tea gardens and misty mountains"},
+        {"name": "Kochi", "type": "City", "description": "Historic port city with colonial buildings"},
+        {"name": "Kovalam Beach", "type": "Beach", "description": "Beautiful beach with lighthouse"}
+      ],
+      "best_season": "September to March",
+      "avg_daily_cost": 2300,
+      "keywords": ["backwaters", "ayurveda", "beaches", "nature", "spa"]
+    },
+    {
+      "name": "Shimla",
+      "type": "Mountain",
+      "state": "Himachal Pradesh",
+      "description": "Queen of Hills with colonial charm and mountain views",
+      "attractions": [
+        {"name": "The Mall", "type": "Market", "description": "Famous shopping street"},
+        {"name": "Jakhu Temple", "type": "Temple", "description": "Hanuman temple with Shimla views"},
+        {"name": "Christ Church", "type": "Church", "description": "Oldest church in North India"},
+        {"name": "Kufri", "type": "Hill Station", "description": "Small hill station with adventure activities"},
+        {"name": "Chail", "type": "Village", "description": "Peaceful retreat with pine forests"}
+      ],
+      "best_season": "March to June, December to January",
+      "avg_daily_cost": 1800,
+      "keywords": ["mountains", "colonial", "nature", "shopping", "honeymoon"]
+    },
+    {
+      "name": "Agra",
+      "type": "Historical",
+      "state": "Uttar Pradesh",
+      "description": "Home to the iconic Taj Mahal and Mughal architecture",
+      "attractions": [
+        {"name": "Taj Mahal", "type": "Monument", "description": "UNESCO World Heritage, marble masterpiece"},
+        {"name": "Agra Fort", "type": "Fort", "description": "Red sandstone fort with palaces"},
+        {"name": "Fatehpur Sikri", "type": "City", "description": "Abandoned Mughal city with mosques"},
+        {"name": "Mehtab Bagh", "type": "Garden", "description": "Sunset point with Taj Mahal views"},
+        {"name": "Itimad-ud-Daulah", "type": "Tomb", "description": "Baby Taj, marble tomb garden"}
+      ],
+      "best_season": "October to March",
+      "avg_daily_cost": 1500,
+      "keywords": ["mughal", "taj mahal", "heritage", "architecture", "history"]
+    },
+    {
+      "name": "Rishikesh",
+      "type": "Adventure",
+      "state": "Uttarakhand",
+      "description": "Yoga capital of the world with adventure and spirituality",
+      "attractions": [
+        {"name": "Lakshman Jhula", "type": "Bridge", "description": "Iconic suspension bridge over Ganga"},
+        {"name": "Triveni Ghat", "type": "Ghat", "description": "Sacred bathing ghat with evening aarti"},
+        {"name": "Neelkanth Mahadev Temple", "type": "Temple", "description": "Sacred temple in the mountains"},
+        {"name": "White Water Rafting", "type": "Adventure", "description": "Exciting rapids on Ganga"},
+        {"name": "Ashrams", "type": "Wellness", "description": "Yoga and meditation centers"}
+      ],
+      "best_season": "March to June, September to November",
+      "avg_daily_cost": 1700,
+      "keywords": ["yoga", "adventure", "spirituality", "rafting", "nature"]
+    },
+    {
+      "name": "Darjeeling",
+      "type": "Mountain",
+      "state": "West Bengal",
+      "description": "Queen of Hills with tea gardens and Himalayan views",
+      "attractions": [
+        {"name": "Tiger Hill", "type": "Viewpoint", "description": "Sunrise point with Kanchenjunga views"},
+        {"name": "Darjeeling Toy Train", "type": "Train", "description": "UNESCO heritage narrow gauge train"},
+        {"name": "Batasia Loop", "type": "Viewpoint", "description": "Loop with Himalayan panorama"},
+        {"name": "Tea Gardens", "type": "Plantation", "description": "Famous Darjeeling tea plantations"},
+        {"name": "Peace Pagoda", "type": "Pagoda", "description": "Japanese Buddhist pagoda with views"}
+      ],
+      "best_season": "March to May, October to November",
+      "avg_daily_cost": 2100,
+      "keywords": ["tea", "mountains", "toys train", "nature", "himalaya"]
+    },
+    {
+      "name": "Varanasi",
+      "type": "Spiritual",
+      "state": "Uttar Pradesh",
+      "description": "Oldest city in the world with ghats and spiritual significance",
+      "attractions": [
+        {"name": "Dashashwamedh Ghat", "type": "Ghat", "description": "Main ghat with evening aarti"},
+        {"name": "Kashi Vishwanath Temple", "type": "Temple", "description": "Famous Hindu temple"},
+        {"name": "Sarnath", "type": "Buddhist", "description": "Buddhist pilgrimage site"},
+        {"name": "Evening Ganga Aarti", "type": "Ceremony", "description": "Magnificent ritual at sunset"},
+        {"name": "Manikarnika Ghat", "type": "Ghat", "description": "Hindu cremation ground"}
+      ],
+      "best_season": "October to March",
+      "avg_daily_cost": 1200,
+      "keywords": ["spiritual", "ghats", "temples", "culture", "ancient"]
+    },
+    {
+      "name": "Ooty",
+      "type": "Mountain",
+      "state": "Tamil Nadu",
+      "description": "Queen of Hill Stations with botanical gardens and lakes",
+      "attractions": [
+        {"name": "Government Botanical Garden", "type": "Garden", "description": "Famous garden with rare plants"},
+        {"name": "Ooty Lake", "type": "Lake", "description": "Scenic lake with boating"},
+        {"name": "Doddabetta Peak", "type": "Peak", "description": "Highest point with valley views"},
+        {"name": "Pykara Lake", "type": "Lake", "description": "Beautiful lake with falls"},
+        {"name": "Nilgiri Mountain Railway", "type": "Train", "description": "Scenic toy train ride"}
+      ],
+      "best_season": "April to June, September to November",
+      "avg_daily_cost": 1900,
+      "keywords": ["mountains", "lakes", "nature", "tea", "honeymoon"]
+    },
+    {
+      "name": "Mysore",
+      "type": "Cultural",
+      "state": "Karnataka",
+      "description": "City of Palaces with rich heritage and silk",
+      "attractions": [
+        {"name": "Mysore Palace", "type": "Palace", "description": "Indoor palace with illumination"},
+        {"name": "Chamundeshwari Temple", "type": "Temple", "description": "Temple on Chamundi Hill"},
+        {"name": "Brindavan Gardens", "type": "Garden", "description": "Terraced gardens with fountains"},
+        {"name": "Mysore Zoo", "type": "Zoo", "description": "One of the oldest zoos in India"},
+        {"name": "St. Philomena's Church", "type": "Church", "description": "Gothic architecture church"}
+      ],
+      "best_season": "October to March",
+      "avg_daily_cost": 1600,
+      "keywords": ["palaces", "heritage", "silk", "culture", "architecture"]
+    },
+    {
+      "name": "Leh-Ladakh",
+      "type": "Mountain",
+      "state": "Ladakh",
+      "description": "Land of high passes with stunning Himalayan landscapes",
+      "attractions": [
+        {"name": "Pangong Lake", "type": "Lake", "description": "High altitude lake with blue waters"},
+        {"name": "Nubra Valley", "type": "Valley", "description": "Desert with double-humped camels"},
+        {"name": "Magnetic Hill", "type": "Phenomenon", "description": "Gravity defying hill"},
+        {"name": "Thiksey Monastery", "type": "Monastery", "description": "Tibetan Buddhist monastery"},
+        {"name": "Khardung La", "type": "Pass", "description": "Highest motorable pass"}
+      ],
+      "best_season": "May to September",
+      "avg_daily_cost": 3000,
+      "keywords": ["mountains", "adventure", "monasteries", " lakes", "biking"]
+    }
+  ]
+}
