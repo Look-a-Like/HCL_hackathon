@@ -21,5 +21,19 @@
       "mcp__claude_ai_Google_Drive__*"
     ]
   },
-  "effortLevel": "high"
+  "effortLevel": "high",
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "agent",
+            "timeout": 60,
+            "statusMessage": "Logging architectural decisions...",
+            "prompt": "Check what files were modified using `git diff HEAD --name-only` and `git diff --cached --name-only`. If any files were changed, append a structured entry to `docs/architecture_decisions.md` (create the file and its parent directory if they don't exist). Use this exact format:\n\n## $(date '+%Y-%m-%d %H:%M') — Changes\n**Files modified:** <comma-separated list>\n**Decisions:** <bullet points of key architectural or design choices made>\n**Rationale:** <one or two sentences on why these choices were made>\n\n---\n\nGet the timestamp with the Bash tool: `date '+%Y-%m-%d %H:%M'`. If the git working tree is clean (no changes), do nothing and exit silently."
+          }
+        ]
+      }
+    ]
+  }
 }
