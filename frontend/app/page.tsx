@@ -3,6 +3,7 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import Header from "@/components/Header";
 import TripInput from "@/components/TripInput";
+import TripForm from "@/components/TripForm";
 import AgentTimeline from "@/components/AgentTimeline";
 import DayCard from "@/components/DayCard";
 import BudgetBar from "@/components/BudgetBar";
@@ -59,15 +60,13 @@ function IdleView({ onSubmit }: { onSubmit: (q: string) => void }) {
 
       {/* Background orbs */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute w-[600px] h-[600px] rounded-full" style={{ top: "-200px", left: "-150px", background: "radial-gradient(circle, rgba(139,92,246,0.15) 0%, transparent 65%)", filter: "blur(60px)" }} />
-        <div className="absolute w-[500px] h-[500px] rounded-full" style={{ bottom: "-100px", right: "-100px", background: "radial-gradient(circle, rgba(196,181,253,0.2) 0%, transparent 65%)", filter: "blur(60px)" }} />
-        <div className="absolute w-[300px] h-[300px] rounded-full" style={{ top: "40%", right: "20%", background: "radial-gradient(circle, rgba(124,58,237,0.08) 0%, transparent 65%)", filter: "blur(40px)" }} />
-        {/* Dot grid */}
-        <div className="absolute inset-0 dot-grid opacity-60" />
+        <div className="absolute" style={{ width: 600, height: 600, top: -200, left: -150, background: "radial-gradient(circle, rgba(139,92,246,0.15) 0%, transparent 65%)", filter: "blur(60px)", borderRadius: "50%" }} />
+        <div className="absolute" style={{ width: 500, height: 500, bottom: -100, right: -100, background: "radial-gradient(circle, rgba(196,181,253,0.2) 0%, transparent 65%)", filter: "blur(60px)", borderRadius: "50%" }} />
+        <div className="absolute inset-0 dot-grid" style={{ opacity: 0.5 }} />
       </div>
 
-      {/* Minimal nav */}
-      <nav className="relative z-10 flex items-center justify-between px-8 py-5">
+      {/* Nav */}
+      <nav className="relative z-10 flex items-center justify-between px-6 sm:px-10 py-5">
         <div className="flex items-center gap-2.5">
           <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: "linear-gradient(135deg, #7C3AED, #8B5CF6)", boxShadow: "0 4px 16px rgba(124,58,237,0.35)" }}>
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -75,84 +74,78 @@ function IdleView({ onSubmit }: { onSubmit: (q: string) => void }) {
               <path d="M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20" />
             </svg>
           </div>
-          <span className="font-bold text-[16px]" style={{ color: "#1E1B4B" }}>Cartographer AI</span>
+          <span style={{ fontWeight: 800, fontSize: 16, color: "#1E1B4B" }}>Cartographer AI</span>
         </div>
-
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full" style={{ background: "rgba(124,58,237,0.08)", border: "1px solid rgba(124,58,237,0.15)" }}>
-            <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: "#7C3AED" }} />
-            <span className="text-[11px] font-semibold tracking-wider uppercase" style={{ color: "#7C3AED" }}>6 Agents Ready</span>
-          </div>
+        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full" style={{ background: "rgba(124,58,237,0.08)", border: "1px solid rgba(124,58,237,0.15)" }}>
+          <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ display: "inline-block", width: 6, height: 6, borderRadius: "50%", background: "#7C3AED" }} />
+          <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.07em", textTransform: "uppercase", color: "#7C3AED" }}>6 Agents Ready</span>
         </div>
       </nav>
 
-      {/* Hero */}
-      <main className="relative z-10 flex flex-col items-center justify-center px-4 pt-12 pb-24">
-        <div className="w-full max-w-2xl text-center">
+      {/* Two-column layout: hero left, form right */}
+      <main className="relative z-10 max-w-6xl mx-auto px-4 sm:px-8 pt-6 pb-20">
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 48, alignItems: "start" }}>
 
-          {/* Eyebrow */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-8 fade-in" style={{ background: "rgba(255,255,255,0.7)", border: "1px solid rgba(124,58,237,0.2)", boxShadow: "0 2px 12px rgba(124,58,237,0.08)", backdropFilter: "blur(8px)" }}>
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-            </svg>
-            <span className="text-[12px] font-semibold" style={{ color: "#7C3AED" }}>Multi-Agent AI Travel Planner</span>
+          {/* LEFT: headline + stats */}
+          <div className="fade-in" style={{ paddingTop: 20 }}>
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full mb-6 fade-in" style={{ background: "rgba(255,255,255,0.7)", border: "1px solid rgba(124,58,237,0.2)", boxShadow: "0 2px 12px rgba(124,58,237,0.08)", backdropFilter: "blur(8px)" }}>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+              </svg>
+              <span style={{ fontSize: 11, fontWeight: 700, color: "#7C3AED" }}>Multi-Agent AI Travel Planner</span>
+            </div>
+
+            <h1 className="fade-in-1" style={{ fontSize: "clamp(32px, 4vw, 52px)", fontWeight: 800, color: "#1E1B4B", lineHeight: 1.08, letterSpacing: "-0.025em", marginBottom: 20 }}>
+              Plan your perfect<br />
+              journey,{" "}
+              <span style={{ background: "linear-gradient(135deg, #7C3AED, #8B5CF6, #A78BFA)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
+                effortlessly.
+              </span>
+            </h1>
+
+            <p className="fade-in-2" style={{ fontSize: 16, color: "#6B7280", lineHeight: 1.7, marginBottom: 32 }}>
+              Select your destination, set a budget, pick your travel style — and let six specialized AI agents build a complete itinerary, handle bookings, and uncover local secrets.
+            </p>
+
+            {/* Feature list */}
+            <div className="fade-in-3" style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              {[
+                { icon: "🗺", title: "Day-by-day itinerary", desc: "Morning, afternoon & evening with timings" },
+                { icon: "₹", title: "Budget in Rupees", desc: "Flights, trains, hotels & food in INR" },
+                { icon: "🏨", title: "Booking options", desc: "Best stays & transport in your budget" },
+                { icon: "✨", title: "Local gems", desc: "Offbeat spots, dhabas & insider tips" },
+              ].map(({ icon, title, desc }) => (
+                <div key={title} style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  <div style={{ width: 36, height: 36, borderRadius: 10, background: "rgba(255,255,255,0.8)", border: "1px solid rgba(124,58,237,0.15)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, flexShrink: 0, backdropFilter: "blur(8px)" }}>
+                    {icon}
+                  </div>
+                  <div>
+                    <p style={{ fontSize: 13, fontWeight: 700, color: "#1E1B4B" }}>{title}</p>
+                    <p style={{ fontSize: 12, color: "#9CA3AF" }}>{desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Agent chips */}
+            <div className="fade-in-4" style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 28 }}>
+              {["Master Planner", "Destination Scout", "Budget Optimizer", "Itinerary Builder", "Booking Agent", "Local Oracle"].map((label) => (
+                <div key={label} style={{ padding: "5px 10px", borderRadius: 999, background: "rgba(255,255,255,0.65)", border: "1px solid rgba(124,58,237,0.15)", fontSize: 11, color: "#6B7280", backdropFilter: "blur(8px)" }}>
+                  {label}
+                </div>
+              ))}
+            </div>
           </div>
 
-          {/* Headline */}
-          <h1 className="font-extrabold leading-[1.05] mb-5 fade-in-1" style={{ fontSize: "clamp(36px, 6vw, 58px)", color: "#1E1B4B", letterSpacing: "-0.02em" }}>
-            Plan your perfect journey,<br />
-            <span style={{ background: "linear-gradient(135deg, #7C3AED 0%, #8B5CF6 50%, #A78BFA 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
-              effortlessly.
-            </span>
-          </h1>
-
-          <p className="mb-10 fade-in-2" style={{ fontSize: "17px", color: "#6B7280", lineHeight: 1.65, maxWidth: "480px", margin: "0 auto 40px" }}>
-            Describe your trip in plain language. Six specialized agents handle destination research, budgeting, bookings, and local insights — all in one go.
-          </p>
-
-          {/* Input card */}
-          <div className="fade-in-3 text-left" style={{ background: "rgba(255,255,255,0.85)", borderRadius: "20px", boxShadow: "0 8px 40px rgba(124,58,237,0.12), 0 2px 12px rgba(0,0,0,0.04)", backdropFilter: "blur(12px)", border: "1.5px solid rgba(124,58,237,0.12)", padding: "6px" }}>
-            <TripInput onSubmit={onSubmit} loading={false} variant="hero" />
-          </div>
-
-          {/* Agent chips */}
-          <div className="flex flex-wrap items-center justify-center gap-2.5 mt-8 fade-in-4">
-            {[
-              { icon: "◈", label: "Master Planner" },
-              { icon: "⊕", label: "Destination Scout" },
-              { icon: "◎", label: "Budget Optimizer" },
-              { icon: "▣", label: "Itinerary Builder" },
-              { icon: "◇", label: "Booking Agent" },
-              { icon: "✦", label: "Local Oracle" },
-            ].map(({ icon, label }) => (
-              <div key={label} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full" style={{ background: "rgba(255,255,255,0.7)", border: "1px solid rgba(124,58,237,0.15)", fontSize: "12px", color: "#6B7280", backdropFilter: "blur(8px)" }}>
-                <span style={{ color: "#7C3AED", fontSize: "11px" }}>{icon}</span>
-                {label}
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Feature row */}
-        <div className="w-full max-w-3xl mt-20 fade-in-5">
-          <div className="grid grid-cols-3 gap-4">
-            {[
-              { icon: "🗺", title: "Instant Itinerary", desc: "Day-by-day schedule with times, activities, and dining" },
-              { icon: "💰", title: "Budget Breakdown", desc: "Flights, hotels, food, and activities all priced out" },
-              { icon: "✈", title: "Booking Options", desc: "Best-matched flights and hotels within your budget" },
-            ].map(({ icon, title, desc }) => (
-              <div key={title} className="p-5 rounded-2xl text-center" style={{ background: "rgba(255,255,255,0.6)", border: "1px solid rgba(124,58,237,0.12)", backdropFilter: "blur(8px)" }}>
-                <span className="text-2xl block mb-2">{icon}</span>
-                <p className="font-semibold text-[13px] mb-1" style={{ color: "#1E1B4B" }}>{title}</p>
-                <p className="text-[12px] leading-relaxed" style={{ color: "#6B7280" }}>{desc}</p>
-              </div>
-            ))}
+          {/* RIGHT: form */}
+          <div className="fade-in-2">
+            <TripForm onSubmit={onSubmit} loading={false} />
           </div>
         </div>
       </main>
 
-      <footer className="relative z-10 text-center py-5 text-[11px]" style={{ color: "#9CA3AF", borderTop: "1px solid rgba(124,58,237,0.08)" }}>
-        Cartographer AI coordinates multiple specialized agents. Responses may take a moment.
+      <footer className="relative z-10 text-center py-4" style={{ fontSize: 11, color: "#9CA3AF", borderTop: "1px solid rgba(124,58,237,0.08)" }}>
+        Cartographer AI — Built for Indian travellers. Prices in INR. Powered by 6 AI agents.
       </footer>
     </div>
   );
@@ -224,7 +217,7 @@ function PlanningView({ query, agents, feed, onFollowUp, isLoading }: {
         <div className="max-w-3xl mx-auto px-4 py-3 space-y-2">
           <TripInput onSubmit={onFollowUp} loading={isLoading} variant="bar" placeholder="Instruct the agents… (e.g. 'Find a boutique hotel near the station')" />
           <p className="text-center text-[11px]" style={{ color: "#9CA3AF" }}>
-            Cartographer AI coordinates multiple specialized agents. Responses may take a moment.
+            Cartographer AI — Built for Indian travellers. Prices in INR. Powered by 6 AI agents.
           </p>
         </div>
       </div>

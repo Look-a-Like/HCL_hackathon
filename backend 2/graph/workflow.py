@@ -46,7 +46,7 @@ def compile_workflow():
 langgraph_app = compile_workflow()
 
 
-def run_travel_planning(user_input: str):
+async def run_travel_planning(user_input: str):
     initial_state = create_initial_state(user_input)
-    final_state = langgraph_app.invoke(initial_state)
+    final_state = await langgraph_app.ainvoke(initial_state)
     return final_state

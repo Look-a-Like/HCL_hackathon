@@ -34,9 +34,10 @@ export default function BudgetBar({ budget }: { budget: BudgetBreakdown }) {
       {/* Total */}
       <div style={{ marginBottom: 18 }}>
         <p style={{ fontSize: 30, fontWeight: 800, color: "#1E1B4B", lineHeight: 1, letterSpacing: "-0.02em" }}>
-          {budget.currency ?? "$"}{budget.total?.toLocaleString()}
+          {budget.currency === "USD" || budget.currency === "$" ? "$" : "₹"}
+          {budget.total?.toLocaleString("en-IN")}
         </p>
-        <p style={{ fontSize: 12, color: "#6B7280", marginTop: 4 }}>Estimated Total</p>
+        <p style={{ fontSize: 12, color: "#6B7280", marginTop: 4 }}>Estimated Total (INR)</p>
       </div>
 
       {/* Items */}
@@ -48,7 +49,7 @@ export default function BudgetBar({ budget }: { budget: BudgetBreakdown }) {
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 5 }}>
                 <span style={{ fontSize: 13, color: "#6B7280" }}>{label}</span>
                 <span style={{ fontSize: 13, fontWeight: 600, color: "#1E1B4B" }}>
-                  {budget.currency ?? "$"}{budget[key]?.toLocaleString()}
+                  ₹{budget[key]?.toLocaleString("en-IN")}
                 </span>
               </div>
               <div style={{ height: 4, background: "#EDE9FE", borderRadius: 999, overflow: "hidden" }}>

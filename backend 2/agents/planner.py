@@ -5,20 +5,10 @@ from typing import Optional
 from backend.graph.state import TravelState
 from backend.middleware.guard import is_injection, sanitize_input
 from backend.prompts.planner import PLANNER_SYSTEM_PROMPT, PLANNER_USER_PROMPT, REFINEMENT_PROMPT
+from backend.tools.llm import get_llm_client, parse_json_response
 
 
-def get_anthropic_client():
-    try:
-        from anthropic import Anthropic
-        api_key = os.getenv("ANTHROPIC_API_KEY")
-        if api_key:
-            return Anthropic(api_key=api_key)
-    except ImportError:
-        pass
-    return None
-
-
-def planner_agent(state: TravelState) -> TravelState:
+async def planner_agent(state: TravelState) -> TravelState:
     user_input = sanitize_input(state["user_input"])
     
     if is_injection(user_input):
@@ -26,7 +16,7 @@ def planner_agent(state: TravelState) -> TravelState:
         state["missing_fields"] = ["invalid input"]
         return state
     
-    client = get_anthropic_client()
+    client = get_llm_client()
     
     if state["conversation_history"]:
         prompt = REFINEMENT_PROMPT.format(
@@ -36,21 +26,17 @@ def planner_agent(state: TravelState) -> TravelState:
     else:
         prompt = PLANNER_USER_PROMPT.format(user_input=user_input)
     
-    if client:
-        try:
-            response = client.messages.create(
-                model="claude-sonnet-4-20250514",
-                max_tokens=500,
-                temperature=0.3,
-                system=PLANNER_SYSTEM_PROMPT,
-                messages=[{"role": "user", "content": prompt}]
-            )
-            result_text = response.content[0].text.strip()
-            extracted = _parse_json_response(result_text)
-        except Exception as e:
-            state["errors"].append(f"LLM error: {str(e)}")
-            extracted = _fallback_parse(user_input)
-    else:
+    # Let with_retry handle exceptions from achat
+    result_text = await client.achat(
+        messages=[{"role": "user", "content": prompt}],
+        system_prompt=PLANNER_SYSTEM_PROMPT,
+        max_tokens=500,
+        temperature=0.3
+    )
+    extracted = parse_json_response(result_text)
+    
+    if not extracted:
+        # If parsing fails, use fallback parsing
         extracted = _fallback_parse(user_input)
     
     if extracted:
@@ -115,16 +101,3 @@ def _fallback_parse(user_input: str) -> dict:
         "interests": interests,
         "missing_fields": missing
     }
-
-
-def _parse_json_response(text: str) -> dict:
-    try:
-        if "```json" in text:
-            text = text.split("```json")[1].split("```")[0]
-        elif "```" in text:
-            text = text.split("```")[1].split("```")[0]
-        
-        json_str = text.strip()
-        return json.loads(json_str)
-    except (json.JSONDecodeError, IndexError):
-        return {}

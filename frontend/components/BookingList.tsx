@@ -39,7 +39,7 @@ function FlightCard({ flight, i }: { flight: BookingOptions["flights"][0]; i: nu
       )}
 
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <span style={{ fontSize: 15, fontWeight: 800, color: "#1E1B4B" }}>${flight.price?.toLocaleString()}</span>
+        <span style={{ fontSize: 15, fontWeight: 800, color: "#1E1B4B" }}>₹{flight.price?.toLocaleString("en-IN")}</span>
         <button className="btn-primary" style={{ padding: "8px 16px", fontSize: 12 }}>
           Confirm Flight →
         </button>
@@ -72,7 +72,7 @@ function HotelCard({ hotel, i }: { hotel: BookingOptions["hotels"][0]; i: number
         )}
       </div>
       <div style={{ textAlign: "right", flexShrink: 0 }}>
-        <p style={{ fontSize: 15, fontWeight: 800, color: "#1E1B4B" }}>${hotel.price?.toLocaleString()}</p>
+        <p style={{ fontSize: 15, fontWeight: 800, color: "#1E1B4B" }}>₹{hotel.price?.toLocaleString("en-IN")}</p>
         <p style={{ fontSize: 10, color: "#9CA3AF" }}>/night</p>
       </div>
     </div>

@@ -1,4 +1,4 @@
-# Design Spec — Agentic AI Travel Planning Assistant
+# Design Spec — Cartographer AI (Agentic Travel Planning Assistant)
 **Date:** 2026-04-18  
 **Status:** Approved for implementation
 
