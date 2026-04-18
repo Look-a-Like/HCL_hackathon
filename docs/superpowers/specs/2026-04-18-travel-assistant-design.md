@@ -4,6 +4,20 @@
 
 ---
 
+## Key Updates & Lock-Ins
+
+1. **Framework & Architecture Lock-In:** The system will be built using LangGraph instead of CrewAI. This decision was driven by LangGraph's explicit state control and ability to visualize the graph for step-by-step debugging. LangGraph is noted as being more production-ready, which is critical for a demo that cannot break live.
+2. **Explicit State Management (TravelState):** Instead of agents passing unstructured messages, the architecture now centers around a highly structured, shared state object. A `TravelState` class defined as a `TypedDict` acts as the single source of truth flowing through the graph edges. It captures the initial user input and tracks extracted constraints like budget, duration, and destination. It explicitly includes an errors list to accumulate faults, allowing the Planner Agent to retry or skip failed nodes.
+3. **Parallel Graph Routing:** The workflow has evolved from a purely sequential list into a true graph structure with parallel execution. The Planner Agent acts as the Supervisor. The destination and budget agents are executed in parallel after the planner establishes the constraints. Once both are complete, their data flows into the itinerary agent, which then feeds into the booking and local_experience agents.
+4. **Specific Technology Stack Selection:** 
+   - Orchestrator LLM: `claude-sonnet-4-6` for the Planner Agent.
+   - Worker LLM: `claude-haiku-4-5` for specialized task agents.
+   - Language & Infrastructure: Python 3.11+, deployed on Render's free tier, frontend in Streamlit.
+5. **Mock Data Strategy (Hackathon Constraints):** The architecture relies on local mock JSON files containing curated Indian destinations, hotel tiers, and flight costs to avoid API limits. A free web search tool like DuckDuckGo or Tavily will be integrated for live data enrichment.
+6. **Enhanced UI Streaming:** The Streamlit app will utilize a chat-style input and stream the progress of the agents. As the `StateGraph` executes, the UI will display exactly which agent is currently working and output successes as they complete their tasks.
+
+---
+
 ## 1. Problem Statement
 
 Travel planning is fragmented: users manually search destinations, compare prices, build itineraries, and manage bookings across multiple platforms. The solution is a multi-agent AI system where each agent owns one responsibility, and a Planner Agent orchestrates the whole flow — delivering a complete, budget-aware, personalized travel plan from a single natural language request.
