@@ -56,7 +56,19 @@ def _fallback_parse(user_input: str) -> dict:
     user_lower = user_input.lower()
     
     destination = None
-    destinations = ["goa", "manali", "jaipur", "kerala", "shimla", "agra", "rishikesh", "darjeeling", "varanasi", "ooty", "mysore", "leh", "ladakh"]
+    destinations = [
+        "goa", "manali", "jaipur", "kerala", "shimla", "agra", "rishikesh",
+        "darjeeling", "varanasi", "ooty", "mysore", "leh", "ladakh",
+        "assam", "guwahati", "kaziranga", "majuli",
+        "meghalaya", "shillong", "cherrapunji",
+        "sikkim", "gangtok", "andaman", "port blair",
+        "coorg", "hampi", "gokarna", "munnar", "alleppey", "kovalam",
+        "pondicherry", "mahabalipuram", "rameswaram", "madurai",
+        "kolkata", "delhi", "mumbai", "pune", "bangalore", "hyderabad",
+        "udaipur", "jodhpur", "jaisalmer", "pushkar",
+        "nainital", "mussoorie", "haridwar", "auli",
+        "srinagar", "pahalgam", "gulmarg",
+    ]
     for dest in destinations:
         if dest in user_lower:
             destination = dest.title()
@@ -68,8 +80,8 @@ def _fallback_parse(user_input: str) -> dict:
         num_str = budget_match.group(1) or budget_match.group(2)
         budget = int(num_str.replace(",", ""))
     
-    days_match = re.search(r'(\d+)\s*(?:day|days)', user_lower)
-    duration_days = int(days_match.group(1)) if days_match else None
+    days_match = re.search(r'(\d+)\s*(?:day|days|night|nights)', user_lower)
+    duration_days = int(days_match.group(1)) if days_match else 3  # default 3 days
     
     interests = []
     interest_keywords = {

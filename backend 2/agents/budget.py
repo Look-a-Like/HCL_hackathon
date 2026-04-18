@@ -11,8 +11,8 @@ async def budget_agent(state: TravelState) -> TravelState:
     interests = state.get("interests", [])
     
     if not budget:
-        state["errors"].append("No budget specified")
-        return state
+        budget = 50000  # default ₹50,000 when not specified
+        state["budget"] = budget
     
     client = get_llm_client()
     prompt = BUDGET_USER_PROMPT.format(

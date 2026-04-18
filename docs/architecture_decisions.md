@@ -62,3 +62,57 @@
 **Rationale:** Build cache updates are an expected byproduct of compilation. Preserving incremental build state improves subsequent TypeScript compilation performance during development.
 
 ---
+
+## 2026-04-18 16:57 — Changes
+**Files modified:** backend/main.py, backend/2/agents/booking.py, backend/2/agents/local_experience.py, backend/2/agents/planner.py, backend/2/tools/ranking.py, frontend/components/BookingList.tsx, frontend/components/GemsGrid.tsx, frontend/lib/types.ts
+
+**Decisions:**
+- Format-string fix in `main.py` ensuring `budget or 0` prevents `None` values in currency formatting
+- Expanded EXPERIENCES_DB with Assam, Darjeeling, and Varanasi destinations (9+ curated experiences each)
+- Fallback destination parser extended to cover 30+ destinations including all Northeast India cities
+- Backend agent pipeline (booking, local_experience, planner) updated for enhanced routing and experience retrieval
+- Frontend components (BookingList, GemsGrid) synchronized with enhanced experience data
+
+**Rationale:** These changes improve destination coverage and travel experience curation while ensuring robust null-safety in formatting operations. The expanded fallback parser ensures graceful handling of diverse user queries across India's regions, reducing agent hallucination and improving user experience.
+
+---
+
+## 2026-04-18 17:07 — Changes
+**Files modified:** backend 2/agents/booking.py, backend 2/agents/budget.py, backend 2/agents/local_experience.py, backend 2/agents/planner.py, backend 2/main.py, backend 2/tools/ranking.py, frontend/components/BookingList.tsx, frontend/components/GemsGrid.tsx, frontend/lib/types.ts, frontend/tsconfig.tsbuildinfo, docs/architecture_decisions.md
+
+**Decisions:**
+- Implemented robust fallback parsing in `agents/planner.py` with configurable defaults (days=3, budget=₹50K) when LLM extraction fails
+- Added `_fallback_parse()` method to handle edge cases and prevent silent failures with missing user inputs
+- Integrated fallback budget split in `agents/budget.py` using fixed allocation percentages (transport 25%, hotel 35%, food 25%, activities 10%, buffer 5%)
+- Ensured graceful degradation across entire planning pipeline: prompt parsing → budget allocation → booking → local experiences
+- Updated backend agents to work with optional inputs, enabling the system to function with minimal user information
+
+**Rationale:** Fallback mechanisms prevent the entire pipeline from silently failing when users provide incomplete information (e.g., "trip to Assam" without budget/days). By applying intelligent defaults at multiple pipeline stages, users get usable itineraries even with sparse inputs, dramatically improving the system's robustness and real-world usability.
+
+---
+## 2026-04-18 17:10 — Changes
+**Files modified:** backend 2/agents/booking.py, backend 2/agents/budget.py, backend 2/agents/local_experience.py, backend 2/agents/planner.py, backend 2/main.py, backend 2/tools/ranking.py, frontend/components/BookingList.tsx, frontend/components/GemsGrid.tsx, frontend/lib/types.ts, docs/architecture_decisions.md
+
+**Decisions:**
+- Implemented streaming SSE endpoints (`/plan` and `/plan/sync`) for real-time agent execution feedback
+- Designed thin Next.js proxy at `/api/plan` to avoid CORS issues while forwarding backend streams to frontend
+- Rate-limited the main `/plan` endpoint to 5 requests/minute to prevent abuse
+- Added `/health` endpoint for system monitoring and health checks
+- Frontend communicates exclusively through proxy layer, never directly with backend
+
+**Rationale:** Streaming SSE provides a superior user experience by displaying agent progress in real-time rather than waiting for completion. The proxy pattern resolves CORS restrictions while maintaining clean separation of concerns, allowing the frontend and backend to evolve independently while the proxy handles integration concerns.
+
+---
+
+## 2026-04-18 17:11 — Changes
+**Files modified:** backend 2/agents/booking.py, backend 2/agents/budget.py, backend 2/agents/local_experience.py, backend 2/agents/planner.py, backend 2/main.py, backend 2/tools/ranking.py, frontend/components/BookingList.tsx, frontend/components/GemsGrid.tsx, frontend/lib/types.ts, frontend/tsconfig.tsbuildinfo, docs/architecture_decisions.md
+
+**Decisions:**
+- Mapped backend endpoints to handler locations for debugging and code review: booking agent (lines 180, 185), budget agent (lines 215, 229) in main.py
+- Documented frontend proxy layer route at `/api/plan/route.ts` with single POST handler for backend streaming communication
+- Structured code documentation for future maintenance and contributor onboarding
+- Verified type consistency across backend agents and frontend components
+
+**Rationale:** Explicit documentation of backend endpoint locations and frontend proxy structure enables efficient debugging, code review, and future maintenance. By mapping exact line numbers and handler locations, the team can quickly locate and understand critical request/response paths without navigating through sprawling agent code.
+
+---

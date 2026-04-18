@@ -55,7 +55,7 @@ def transform_final_plan(result: dict) -> dict:
         "food": bb.get("food", 0),
         "transport": bb.get("transport", 0),
         "misc": bb.get("buffer", 0),
-        "total": bb.get("total", result.get("budget", 0)),
+        "total": bb.get("total") or result.get("budget") or 0,
         "currency": bb.get("currency", "INR"),
     }
 
@@ -121,6 +121,9 @@ def transform_final_plan(result: dict) -> dict:
             "type": gem.get("type", "experience"),
             "description": gem.get("description", ""),
             "tip": gem.get("why_special") or gem.get("tip") or gem.get("note"),
+            "maps_url": gem.get("maps_url"),
+            "tripadvisor_url": gem.get("tripadvisor_url"),
+            "estimated_cost": gem.get("estimated_cost"),
         }
         for gem in raw_gems
     ]
@@ -135,6 +138,8 @@ def transform_final_plan(result: dict) -> dict:
             "price": h.get("price_per_night", 0),
             "rating": h.get("rating"),
             "notes": ", ".join(h.get("amenities", [])) if h.get("amenities") else None,
+            "book_url": h.get("book_url"),
+            "maps_url": h.get("maps_url"),
         }
         for h in hotels
     ]
@@ -145,6 +150,8 @@ def transform_final_plan(result: dict) -> dict:
             "route": f.get("route"),
             "duration": f.get("duration"),
             "notes": f.get("stops"),
+            "book_url": f.get("book_url"),
+            "search_url": f.get("search_url"),
         }
         for f in flights
     ]
@@ -152,7 +159,7 @@ def transform_final_plan(result: dict) -> dict:
     duration_days = result.get("duration_days") or len(itinerary) or 3
     interests = result.get("interests") or []
     destination = result.get("destination") or "Your Destination"
-    budget = result.get("budget", 0)
+    budget = result.get("budget") or 0
 
     return {
         "destination": destination,
