@@ -3,8 +3,8 @@ import operator
 
 
 def last_value(old: Any, new: Any) -> Any:
-    """Reducer that picks the new value, allowing multiple updates in a single step."""
-    return new
+    """Reducer that picks the new value, but keeps old if new is None."""
+    return new if new is not None else old
 
 
 def merge_dicts(old: dict, new: dict) -> dict:

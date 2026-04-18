@@ -8,28 +8,61 @@ from typing import Optional
 LLMProvider = str | None
 
 
-def parse_json_response(text: str) -> dict:
-    """Extract and parse JSON from LLM response."""
+def parse_json_response(text: str):
+    """Extract and parse JSON (dict or list) from LLM response using brace-tracking."""
+    if not text:
+        return {}
+
+    # Try direct parse first
     try:
-        # Try direct parse
         return json.loads(text)
     except json.JSONDecodeError:
-        # Find JSON block
-        match = re.search(r'(\{.*\})', text, re.DOTALL)
-        if match:
-            try:
-                return json.loads(match.group(1))
-            except json.JSONDecodeError:
-                pass
-        
-        # Look for markdown block
-        match = re.search(r'```(?:json)?\s*(\{.*?\})\s*```', text, re.DOTALL)
-        if match:
-            try:
-                return json.loads(match.group(1))
-            except json.JSONDecodeError:
-                pass
-                
+        pass
+
+    # Find whichever JSON structure starts first: { or [
+    pos_brace = text.find('{')
+    pos_bracket = text.find('[')
+
+    pairs = []
+    if pos_brace != -1 and pos_bracket != -1:
+        if pos_brace < pos_bracket:
+            pairs = [(pos_brace, '{', '}'), (pos_bracket, '[', ']')]
+        else:
+            pairs = [(pos_bracket, '[', ']'), (pos_brace, '{', '}')]
+    elif pos_brace != -1:
+        pairs = [(pos_brace, '{', '}')]
+    elif pos_bracket != -1:
+        pairs = [(pos_bracket, '[', ']')]
+
+    for start, open_char, close_char in pairs:
+        depth = 0
+        in_string = False
+        escape_next = False
+        for i, ch in enumerate(text[start:], start):
+            if escape_next:
+                escape_next = False
+                continue
+            if ch == '\\' and in_string:
+                escape_next = True
+                continue
+            if ch == '"':
+                in_string = not in_string
+                continue
+            if in_string:
+                continue
+            if ch == open_char:
+                depth += 1
+            elif ch == close_char:
+                depth -= 1
+                if depth == 0:
+                    candidate = text[start:i + 1]
+                    try:
+                        result = json.loads(candidate)
+                        if isinstance(result, (dict, list)):
+                            return result
+                    except json.JSONDecodeError:
+                        break
+
     return {}
 
 

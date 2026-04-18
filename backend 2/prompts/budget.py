@@ -1,25 +1,9 @@
-BUDGET_SYSTEM_PROMPT = """You are a budget optimization agent. Given a total budget and destination, create a detailed breakdown.
+BUDGET_SYSTEM_PROMPT = """You are a budget optimization agent. Return ONLY a compact JSON object, no explanation.
 
-Budget categories to allocate:
-- transport: Travel to/from destination (flights/trains)
-- accommodation: Hotel per night
-- food: Daily food budget
-- activities: Attractions and experiences
-- misc: Buffer for unexpected expenses
+Required fields: transport, hotel, food, activities, buffer, total, currency, tips (array of 2 short strings max).
+All cost values are numbers in INR. No nested objects. No markdown prose."""
 
-Return a JSON object with:
-- transport: estimated cost
-- hotel: estimated cost (per night if multi-day)
-- food: estimated daily cost
-- activities: estimated total
-- buffer: recommended buffer
-- total: sum
-- currency: "INR"
-- tips: any money-saving suggestions"""
+BUDGET_USER_PROMPT = """Budget: {budget} INR | Destination: {destination} | Duration: {days} days | Interests: {interests}
 
-BUDGET_USER_PROMPT = """Total budget: {budget} INR
-Destination: {destination}
-Duration: {days} days
-User interests: {interests}
-
-Create a detailed budget breakdown. Return JSON."""
+Return ONLY this JSON (fill in the numbers):
+{{"transport": 0, "hotel": 0, "food": 0, "activities": 0, "buffer": 0, "total": {budget}, "currency": "INR", "tips": ["tip1", "tip2"]}}"""

@@ -48,7 +48,7 @@ export default function DayCard({ day, index, isLast }: { day: ItineraryDay; ind
           {day.date && <p style={{ fontSize: 11, color: "#9CA3AF", marginTop: 2 }}>{day.date}</p>}
           {(day.estimated_cost ?? 0) > 0 && (
             <p style={{ fontSize: 12, color: "#7C3AED", fontWeight: 600, marginTop: 3 }}>
-              Est. ${day.estimated_cost.toLocaleString()} for the day
+              Est. ₹{day.estimated_cost.toLocaleString("en-IN")} for the day
             </p>
           )}
         </div>

@@ -65,25 +65,28 @@ def transform_final_plan(result: dict) -> dict:
         day_num = day.get("day_number") or day.get("day") or (i + 1)
         theme = day.get("title") or day.get("theme") or f"Day {day_num}"
 
-        activities = day.get("activities", [])
-        morning = "Explore the local area"
-        afternoon = "Visit key attractions"
-        evening = "Dinner and leisure"
+        morning_default = "Explore the local area"
+        afternoon_default = "Visit key attractions"
+        evening_default = "Dinner and leisure"
 
-        if isinstance(activities, list):
-            for act in activities:
-                time_slot = str(act.get("time", "")).lower()
-                desc = act.get("description") or act.get("activity") or ""
-                if "morning" in time_slot:
-                    morning = desc
-                elif "afternoon" in time_slot or "midday" in time_slot or "noon" in time_slot:
-                    afternoon = desc
-                elif "evening" in time_slot or "night" in time_slot:
-                    evening = desc
-        else:
-            morning = day.get("morning", morning)
-            afternoon = day.get("afternoon", afternoon)
-            evening = day.get("evening", evening)
+        # Direct fields (new prompt format)
+        morning = day.get("morning") or morning_default
+        afternoon = day.get("afternoon") or afternoon_default
+        evening = day.get("evening") or evening_default
+
+        # Fallback: activities array (old format)
+        if morning == morning_default and afternoon == afternoon_default:
+            activities = day.get("activities", [])
+            if isinstance(activities, list):
+                for act in activities:
+                    time_slot = str(act.get("time", "")).lower()
+                    desc = act.get("description") or act.get("activity") or ""
+                    if "morning" in time_slot:
+                        morning = desc or morning
+                    elif "afternoon" in time_slot or "midday" in time_slot or "noon" in time_slot:
+                        afternoon = desc or afternoon
+                    elif "evening" in time_slot or "night" in time_slot:
+                        evening = desc or evening
 
         raw_meals = day.get("meals", [])
         meals = {}

@@ -18,8 +18,9 @@ async def booking_agent(state: TravelState) -> TravelState:
     hotels = get_hotels_for_destination(destination)
     flights = get_flights_to_destination(destination)
     
-    hotel_budget = budget_breakdown.get("hotel", state.get("budget", 5000) * 0.4)
-    transport_budget = budget_breakdown.get("transport", state.get("budget", 5000) * 0.25)
+    total_budget = state.get("budget") or 5000
+    hotel_budget = (budget_breakdown or {}).get("hotel", total_budget * 0.4)
+    transport_budget = (budget_breakdown or {}).get("transport", total_budget * 0.25)
     
     ranked_hotels = rank_hotels_by_budget(hotels, hotel_budget, max_results=3)
     ranked_flights = rank_flights_by_budget(flights, transport_budget, max_results=3)

@@ -47,6 +47,13 @@ async def itinerary_agent(state: TravelState) -> TravelState:
                         itinerary = val
                         break
         
+        if not itinerary and isinstance(extracted, dict):
+            # Try top-level keys
+            for val in extracted.values():
+                if isinstance(val, list) and val:
+                    itinerary = val
+                    break
+
         if not itinerary:
             raise ValueError("Could not extract itinerary list from LLM response")
             
