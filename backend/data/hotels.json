@@ -1,0 +1,136 @@
+{
+  "hotels": [
+    {
+      "destination": "Goa",
+      "hotels": [
+        {"name": "Hotel Paradise", "tier": "budget", "price_per_night": 800, "rating": 3.5, "amenities": ["WiFi", "AC", "Restaurant"]},
+        {"name": "Sea View Inn", "tier": "budget", "price_per_night": 950, "rating": 3.8, "amenities": ["WiFi", "AC", "Beach access"]},
+        {"name": "Aliona Beach Resort", "tier": "mid", "price_per_night": 2200, "rating": 4.2, "amenities": ["WiFi", "Pool", "Restaurant", "Beach access"]},
+        {"name": "The Palm Beach", "tier": "mid", "price_per_night": 2800, "rating": 4.4, "amenities": ["WiFi", "Pool", "Spa", "Restaurant"]},
+        {"name": "Taj Holiday Village", "tier": "luxury", "price_per_night": 8500, "rating": 4.9, "amenities": ["WiFi", "Pool", "Spa", "Beach access", "Restaurant", "Bar"]},
+        {"name": "The Leela Goa", "tier": "luxury", "price_per_night": 12000, "rating": 5.0, "amenities": ["WiFi", "Pool", "Spa", "Golf", "Beach access", "Multiple restaurants"]}
+      ]
+    },
+    {
+      "destination": "Manali",
+      "hotels": [
+        {"name": "Mountain View Lodge", "tier": "budget", "price_per_night": 600, "rating": 3.2, "amenities": ["WiFi", "Heater"]},
+        {"name": "Snow Peak Inn", "tier": "budget", "price_per_night": 750, "rating": 3.5, "amenities": ["WiFi", "Heater", "Restaurant"]},
+        {"name": "Apple Country Resort", "tier": "mid", "price_per_night": 1800, "rating": 4.0, "amenities": ["WiFi", "Heater", "Restaurant", "Bonfire"]},
+        {"name": "Manali Heights", "tier": "mid", "price_per_night": 2200, "rating": 4.3, "amenities": ["WiFi", "Heater", "Restaurant", "Parking"]},
+        {"name": "The Himalayan", "tier": "luxury", "price_per_night": 6500, "rating": 4.8, "amenities": ["WiFi", "Spa", "Restaurant", "Bonfire", "Mountain view"]},
+        {"name": "Span Resort", "tier": "luxury", "price_per_night": 8000, "rating": 4.9, "amenities": ["WiFi", "Pool", "Spa", "Restaurant", "River view"]}
+      ]
+    },
+    {
+      "destination": "Jaipur",
+      "hotels": [
+        {"name": "Hotel Marigold", "tier": "budget", "price_per_night": 700, "rating": 3.4, "amenities": ["WiFi", "AC"]},
+        {"name": "Royal Guest House", "tier": "budget", "price_per_night": 850, "rating": 3.6, "amenities": ["WiFi", "AC", "Restaurant"]},
+        {"name": "Mandakini Palace", "tier": "mid", "price_per_night": 1800, "rating": 4.1, "amenities": ["WiFi", "AC", "Restaurant", "Pool"]},
+        {"name": "The Haveli", "tier": "mid", "price_per_night": 2400, "rating": 4.4, "amenities": ["WiFi", "AC", "Restaurant", "Rooftop"]},
+        {"name": "Raj Palace", "tier": "luxury", "price_per_night": 7500, "rating": 4.8, "amenities": ["WiFi", "Pool", "Spa", "Restaurant", "Heritage architecture"]},
+        {"name": "Taj Jai Mahal Palace", "tier": "luxury", "price_per_night": 9500, "rating": 4.9, "amenities": ["WiFi", "Pool", "Spa", "Restaurant", "Gardens"]}
+      ]
+    },
+    {
+      "destination": "Kerala",
+      "hotels": [
+        {"name": "Kuttanad Inn", "tier": "budget", "price_per_night": 650, "rating": 3.3, "amenities": ["WiFi", "AC"]},
+        {"name": "Alleppey Guest House", "tier": "budget", "price_per_night": 800, "rating": 3.5, "amenities": ["WiFi", "AC", "Backwater view"]},
+        {"name": "Lake River Resort", "tier": "mid", "price_per_night": 2000, "rating": 4.2, "amenities": ["WiFi", "AC", "Restaurant", "Boating"]},
+        {"name": "Spice Garden Resort", "tier": "mid", "price_per_night": 2600, "rating": 4.5, "amenities": ["WiFi", "Pool", "Ayurveda", "Restaurant"]},
+        {"name": "Taj Kumarakom", "tier": "luxury", "price_per_night": 8000, "rating": 4.9, "amenities": ["WiFi", "Pool", "Spa", "Houseboat", "Restaurant"]},
+        {"name": "Kumarakom Lake Resort", "tier": "luxury", "price_per_night": 10000, "rating": 5.0, "amenities": ["WiFi", "Pool", "Spa", "Ayurveda", "Lake access"]}
+      ]
+    },
+    {
+      "destination": "Shimla",
+      "hotels": [
+        {"name": "Shimla Tourist Inn", "tier": "budget", "price_per_night": 550, "rating": 3.2, "amenities": ["WiFi", "Heater"]},
+        {"name": "Kashmir House", "tier": "budget", "price_per_night": 700, "rating": 3.5, "amenities": ["WiFi", "Heater", "Restaurant"]},
+        {"name": "Sunny Dale", "tier": "mid", "price_per_night": 1600, "rating": 4.0, "amenities": ["WiFi", "Heater", "Restaurant", "View"]},
+        {"name": "The Willow Banks", "tier": "mid", "price_per_night": 2000, "rating": 4.3, "amenities": ["WiFi", "Heater", "Restaurant", "Mall road"]},
+        {"name": "The Imperial", "tier": "luxury", "price_per_night": 6000, "rating": 4.7, "amenities": ["WiFi", "Spa", "Restaurant", "Heritage"]},
+        {"name": "Wildflower Hall", "tier": "luxury", "price_per_night": 9500, "rating": 4.9, "amenities": ["WiFi", "Pool", "Spa", "Mountain view", "Restaurant"]}
+      ]
+    },
+    {
+      "destination": "Agra",
+      "hotels": [
+        {"name": "Agra Hotel", "tier": "budget", "price_per_night": 500, "rating": 3.1, "amenities": ["WiFi", "AC"]},
+        {"name": "Taj Rest House", "tier": "budget", "price_per_night": 650, "rating": 3.4, "amenities": ["WiFi", "AC", "Restaurant"]},
+        {"name": "Howard Plaza", "tier": "mid", "price_per_night": 1500, "rating": 4.0, "amenities": ["WiFi", "AC", "Restaurant", "Pool"]},
+        {"name": "Clarks Shiraz", "tier": "mid", "price_per_night": 2000, "rating": 4.3, "amenities": ["WiFi", "AC", "Restaurant", "Taj view"]},
+        {"name": "Taj Hotel", "tier": "luxury", "price_per_night": 6500, "rating": 4.8, "amenities": ["WiFi", "Pool", "Spa", "Restaurant", "Taj view"]},
+        {"name": "Oberoi Amarvilas", "tier": "luxury", "price_per_night": 12000, "rating": 5.0, "amenities": ["WiFi", "Pool", "Spa", "Taj view from rooms"]}
+      ]
+    },
+    {
+      "destination": "Rishikesh",
+      "hotels": [
+        {"name": "Ganga View Inn", "tier": "budget", "price_per_night": 500, "rating": 3.3, "amenities": ["WiFi", "AC"]},
+        {"name": "Rishikesh Guest House", "tier": "budget", "price_per_night": 650, "rating": 3.5, "amenities": ["WiFi", "AC", "Ganga view"]},
+        {"name": "Ganga Beach Resort", "tier": "mid", "price_per_night": 1400, "rating": 4.1, "amenities": ["WiFi", "AC", "Restaurant", "River access"]},
+        {"name": "The Hari Krishna", "tier": "mid", "price_per_night": 1800, "rating": 4.4, "amenities": ["WiFi", "Pool", "Restaurant", "Yoga"]},
+        {"name": "Aloha Ganges", "tier": "luxury", "price_per_night": 5500, "rating": 4.8, "amenities": ["WiFi", "Pool", "Spa", "River view", "Restaurant"]},
+        {"name": "Lemon Tree", "tier": "luxury", "price_per_night": 7000, "rating": 4.9, "amenities": ["WiFi", "Pool", "Spa", "Yoga", "Restaurant"]}
+      ]
+    },
+    {
+      "destination": "Darjeeling",
+      "hotels": [
+        {"name": "Hotel Seven Stars", "tier": "budget", "price_per_night": 600, "rating": 3.2, "amenities": ["WiFi", "Heater"]},
+        {"name": "Summit Hotel", "tier": "budget", "price_per_night": 750, "rating": 3.5, "amenities": ["WiFi", "Heater", "Restaurant"]},
+        {"name": "Sinclairs Hotel", "tier": "mid", "price_per_night": 1800, "rating": 4.1, "amenities": ["WiFi", "Heater", "Restaurant", "View"]},
+        {"name": "The Elgin", "tier": "mid", "price_per_night": 2200, "rating": 4.4, "amenities": ["WiFi", "Heater", "Restaurant", "Gardens"]},
+        {"name": "Windamere Hotel", "tier": "luxury", "price_per_night": 6500, "rating": 4.8, "amenities": ["WiFi", "Spa", "Restaurant", "Heritage", "Mountain view"]},
+        {"name": "Taj Tashi", "tier": "luxury", "price_per_night": 8500, "rating": 4.9, "amenities": ["WiFi", "Spa", "Restaurant", "Mountain view"]}
+      ]
+    },
+    {
+      "destination": "Varanasi",
+      "hotels": [
+        {"name": "Ganga Guest House", "tier": "budget", "price_per_night": 450, "rating": 3.0, "amenities": ["WiFi", "AC"]},
+        {"name": "Hotel Divine", "tier": "budget", "price_per_night": 600, "rating": 3.3, "amenities": ["WiFi", "AC", "Ghat view"]},
+        {"name": "Hotel Ideal Tops", "tier": "mid", "price_per_night": 1200, "rating": 4.0, "amenities": ["WiFi", "AC", "Restaurant", "Roof"]},
+        {"name": "Radisson Hotel", "tier": "mid", "price_per_night": 1800, "rating": 4.3, "amenities": ["WiFi", "Pool", "Restaurant", "Ganga view"]},
+        {"name": "Taj Ganges", "tier": "luxury", "price_per_night": 6000, "rating": 4.8, "amenities": ["WiFi", "Pool", "Spa", "Restaurant"]},
+        {"name": "Brij Rama Palace", "tier": "luxury", "price_per_night": 8000, "rating": 4.9, "amenities": ["WiFi", "Spa", "Restaurant", "Ganga ghat access"]}
+      ]
+    },
+    {
+      "destination": "Ooty",
+      "hotels": [
+        {"name": "Hotel Sivoli", "tier": "budget", "price_per_night": 550, "rating": 3.1, "amenities": ["WiFi", "Heater"]},
+        {"name": "Hotel Salendra", "tier": "budget", "price_per_night": 700, "rating": 3.4, "amenities": ["WiFi", "Heater", "Restaurant"]},
+        {"name": "Hotel Lakeview", "tier": "mid", "price_per_night": 1500, "rating": 4.0, "amenities": ["WiFi", "Heater", "Restaurant", "Lake view"]},
+        {"name": "Sterling Ooty", "tier": "mid", "price_per_night": 2000, "rating": 4.3, "amenities": ["WiFi", "Heater", "Pool", "Restaurant"]},
+        {"name": "The Savoy", "tier": "luxury", "price_per_night": 6500, "rating": 4.8, "amenities": ["WiFi", "Spa", "Restaurant", "Heritage", "Garden"]},
+        {"name": "Taj Gardenia", "tier": "luxury", "price_per_night": 8000, "rating": 4.9, "amenities": ["WiFi", "Pool", "Spa", "Restaurant", "Mountain view"]}
+      ]
+    },
+    {
+      "destination": "Mysore",
+      "hotels": [
+        {"name": "Hotel Heritage", "tier": "budget", "price_per_night": 500, "rating": 3.2, "amenities": ["WiFi", "AC"]},
+        {"name": "Hotel Adrus", "tier": "budget", "price_per_night": 650, "rating": 3.4, "amenities": ["WiFi", "AC", "Restaurant"]},
+        {"name": "Hotel Pearl Inn", "tier": "mid", "price_per_night": 1300, "rating": 4.0, "amenities": ["WiFi", "AC", "Restaurant", "Pool"]},
+        {"name": "Hotel Lokesh", "tier": "mid", "price_per_night": 1700, "rating": 4.3, "amenities": ["WiFi", "AC", "Restaurant", "Palace view"]},
+        {"name": "The Grand Inn", "tier": "luxury", "price_per_night": 5000, "rating": 4.7, "amenities": ["WiFi", "Pool", "Restaurant", "Spa"]},
+        {"name": "Radisson Blu", "tier": "luxury", "price_per_night": 7000, "rating": 4.9, "amenities": ["WiFi", "Pool", "Spa", "Restaurant", "Palace view"]}
+      ]
+    },
+    {
+      "destination": "Leh-Ladakh",
+      "hotels": [
+        {"name": "Ladakh Paradise", "tier": "budget", "price_per_night": 800, "rating": 3.3, "amenities": ["WiFi", "Heater"]},
+        {"name": "Zastkri Hotel", "tier": "budget", "price_per_night": 1000, "rating": 3.5, "amenities": ["WiFi", "Heater", "Restaurant"]},
+        {"name": "Hotel Ladakh Palace", "tier": "mid", "price_per_night": 2500, "rating": 4.2, "amenities": ["WiFi", "Heater", "Restaurant", "Mountain view"]},
+        {"name": "The Grand Dragon", "tier": "mid", "price_per_night": 3200, "rating": 4.5, "amenities": ["WiFi", "Heater", "Restaurant", "Spa"]},
+        {"name": "The Leh Village", "tier": "luxury", "price_per_night": 8000, "rating": 4.8, "amenities": ["WiFi", "Spa", "Restaurant", "Mountain view"]},
+        {"name": "Stok Palace", "tier": "luxury", "price_per_night": 12000, "rating": 4.9, "amenities": ["WiFi", "Spa", "Restaurant", "Royal heritage"]}
+      ]
+    }
+  ]
+}

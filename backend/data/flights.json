@@ -1,0 +1,184 @@
+{
+  "flights": [
+    {
+      "route": "Delhi to Goa",
+      "from": "Delhi",
+      "to": "Goa",
+      "airline": "IndiGo",
+      "price": 4500,
+      "duration": "2h 30m",
+      "stops": "Non-stop"
+    },
+    {
+      "route": "Delhi to Goa",
+      "from": "Delhi",
+      "to": "Goa",
+      "airline": "Air India",
+      "price": 3800,
+      "duration": "2h 45m",
+      "stops": "1 stop"
+    },
+    {
+      "route": "Mumbai to Goa",
+      "from": "Mumbai",
+      "to": "Goa",
+      "airline": "SpiceJet",
+      "price": 2500,
+      "duration": "1h 15m",
+      "stops": "Non-stop"
+    },
+    {
+      "route": "Mumbai to Goa",
+      "from": "Mumbai",
+      "to": "Goa",
+      "airline": "Vistara",
+      "price": 3200,
+      "duration": "1h 20m",
+      "stops": "Non-stop"
+    },
+    {
+      "route": "Delhi to Manali",
+      "from": "Delhi",
+      "to": "Manali",
+      "airline": "Air India",
+      "price": 3500,
+      "duration": "1h 30m",
+      "stops": "1 stop (Chandigarh)"
+    },
+    {
+      "route": "Delhi to Jaipur",
+      "from": "Delhi",
+      "to": "Jaipur",
+      "airline": "IndiGo",
+      "price": 2200,
+      "duration": "1h",
+      "stops": "Non-stop"
+    },
+    {
+      "route": "Delhi to Jaipur",
+      "from": "Delhi",
+      "to": "Jaipur",
+      "airline": "Air Asia",
+      "price": 1800,
+      "duration": "1h 10m",
+      "stops": "Non-stop"
+    },
+    {
+      "route": "Mumbai to Kerala",
+      "from": "Mumbai",
+      "to": "Kochi",
+      "airline": "IndiGo",
+      "price": 4000,
+      "duration": "2h",
+      "stops": "Non-stop"
+    },
+    {
+      "route": "Delhi to Kerala",
+      "from": "Delhi",
+      "to": "Kochi",
+      "airline": "Air India",
+      "price": 4500,
+      "duration": "3h 30m",
+      "stops": "1 stop"
+    },
+    {
+      "route": "Delhi to Shimla",
+      "from": "Delhi",
+      "to": "Shimla",
+      "airline": "Air India",
+      "price": 2800,
+      "duration": "1h",
+      "stops": "Non-stop"
+    },
+    {
+      "route": "Delhi to Agra",
+      "from": "Delhi",
+      "to": "Agra",
+      "airline": "Air India",
+      "price": 1500,
+      "duration": "45m",
+      "stops": "Non-stop"
+    },
+    {
+      "route": "Delhi to Rishikesh",
+      "from": "Delhi",
+      "to": "Dehradun",
+      "airline": "IndiGo",
+      "price": 2200,
+      "duration": "1h",
+      "stops": "Non-stop"
+    },
+    {
+      "route": "Delhi to Darjeeling",
+      "from": "Delhi",
+      "to": "Bagdogra",
+      "airline": "IndiGo",
+      "price": 4500,
+      "duration": "2h 30m",
+      "stops": "1 stop"
+    },
+    {
+      "route": "Delhi to Varanasi",
+      "from": "Delhi",
+      "to": "Varanasi",
+      "airline": "Air India",
+      "price": 2500,
+      "duration": "1h 30m",
+      "stops": "Non-stop"
+    },
+    {
+      "route": "Chennai to Ooty",
+      "from": "Chennai",
+      "to": "Coimbatore",
+      "airline": "IndiGo",
+      "price": 2800,
+      "duration": "1h 15m",
+      "stops": "Non-stop"
+    },
+    {
+      "route": "Delhi to Ooty",
+      "from": "Delhi",
+      "to": "Coimbatore",
+      "airline": "Air India",
+      "price": 4500,
+      "duration": "3h",
+      "stops": "1 stop"
+    },
+    {
+      "route": "Bangalore to Mysore",
+      "from": "Bangalore",
+      "to": "Mysore",
+      "airline": "Air India",
+      "price": 1500,
+      "duration": "45m",
+      "stops": "Non-stop"
+    },
+    {
+      "route": "Delhi to Leh",
+      "from": "Delhi",
+      "to": "Leh",
+      "airline": "IndiGo",
+      "price": 6000,
+      "duration": "1h 30m",
+      "stops": "Non-stop"
+    },
+    {
+      "route": "Delhi to Leh",
+      "from": "Delhi",
+      "to": "Leh",
+      "airline": "Air India",
+      "price": 5500,
+      "duration": "1h 45m",
+      "stops": "Non-stop"
+    },
+    {
+      "route": "Mumbai to Leh",
+      "from": "Mumbai",
+      "to": "Leh",
+      "airline": "Air India",
+      "price": 7000,
+      "duration": "3h",
+      "stops": "1 stop"
+    }
+  ]
+}
