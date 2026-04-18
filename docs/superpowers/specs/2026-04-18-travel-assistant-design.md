@@ -24,7 +24,19 @@ Travel planning is fragmented: users manually search destinations, compare price
 
 ---
 
-## 2. Architecture Decision: LangGraph (not CrewAI)
+## 2. Why This Architecture
+
+This design separates **orchestration** (Planner) from **execution** (specialist agents), which enables:
+- **Modular scaling** — any agent can be upgraded independently without touching the pipeline
+- **Parallel execution** — Destination and Budget agents run concurrently, cutting latency
+- **Fault isolation** — one agent failing doesn't collapse the whole plan
+- **Observability** — each agent's input/output is inspectable in the shared state
+
+The Planner is a controller + validator, not just a router. It validates inputs before dispatching, tracks retries per agent, and assembles the final structured output.
+
+---
+
+## 3. Architecture Decision: LangGraph (not CrewAI)
 
 **Chosen: LangGraph**
 
@@ -32,14 +44,14 @@ Travel planning is fragmented: users manually search destinations, compare price
 |---|---|---|
 | State control | Explicit typed state object passed between nodes | Implicit, agent-managed |
 | Debugging | Full graph visualization, step-by-step tracing | Harder to trace |
-| Hackathon speed | Medium setup, high payoff | Fast setup, low control |
+| Async/parallel | Native `asyncio` support, parallel branches | Limited |
 | Production-readiness | High | Medium |
 
-LangGraph gives us a `StateGraph` where each agent is a node, state flows through edges, and the Planner routes conditionally. This makes the agent pipeline transparent and debuggable — critical for a demo that needs to not break live.
+LangGraph gives us a `StateGraph` where each agent is a node, state flows through typed edges, and the Planner routes conditionally. This makes the pipeline transparent and debuggable — critical for a live demo.
 
 ---
 
-## 3. System Architecture
+## 4. System Architecture
 
 ### Agent Roles
 
@@ -47,263 +59,402 @@ LangGraph gives us a `StateGraph` where each agent is a node, state flows throug
 User Input (natural language)
         │
         ▼
-┌─────────────────┐
-│  Planner Agent  │  ← Orchestrator. Parses intent, routes to agents, assembles final output.
-│  (Supervisor)   │    Uses reasoning model (claude-opus-4-7 or o3).
-└────────┬────────┘
-         │ dispatches to (sequentially):
-    ┌────┴─────────────────────────────────────────┐
-    │                                              │
-    ▼                                              ▼
-┌───────────────────────┐          ┌───────────────────────┐
-│ Destination Research  │          │   Budget Optimization  │
-│       Agent           │          │        Agent           │
-│ - Suggests destination│          │ - Estimates costs       │
-│ - Key attractions     │          │ - Cost-saving options  │
-│ - Travel seasons      │          │ - Validates affordability│
-└───────────────────────┘          └───────────────────────┘
-         │                                        │
-         └──────────────────┬─────────────────────┘
-                            │
-                            ▼
-              ┌─────────────────────────┐
-              │     Itinerary Agent      │
-              │ - Day-by-day schedule    │
-              │ - Route optimization     │
-              │ - Timing between stops   │
-              └────────────┬────────────┘
-                           │
-              ┌────────────┴────────────┐
-              │                        │
-              ▼                        ▼
-┌─────────────────────┐   ┌──────────────────────────┐
-│  Booking Assistant  │   │  Local Experience Agent   │
-│       Agent         │   │ - Food, events, hidden    │
-│ - Flight options    │   │   gems                    │
-│ - Hotel options     │   │ - Personalized based on   │
-│ - Transport options │   │   user interests          │
-└─────────────────────┘   └──────────────────────────┘
-              │                        │
-              └────────────┬───────────┘
-                           │
-                           ▼
-              ┌─────────────────────────┐
-              │     Final Output         │
-              │  Complete Travel Plan    │
-              │  (structured JSON →      │
-              │   rendered in Streamlit) │
-              └─────────────────────────┘
+┌──────────────────────────────────────┐
+│            Planner Agent             │  ← Orchestrator + Controller + Validator
+│  - Intent classification             │    Sonnet (reasoning model)
+│  - Entity extraction (budget/dates)  │
+│  - Missing field detection           │
+│  - Retry orchestration               │
+│  - Final plan assembly               │
+└────────────────┬─────────────────────┘
+                 │
+     ┌───────────┴────────────┐
+     │ (parallel dispatch)    │
+     ▼                        ▼
+┌──────────────┐   ┌───────────────────────┐
+│ Destination  │   │  Budget Optimization  │
+│ Research     │   │  Agent                │
+│ Agent        │   │  - Cost estimation    │
+│ - Attractions│   │  - Budget breakdown   │
+│ - Seasons    │   │  - Cost-saving options│
+└──────┬───────┘   └───────────┬───────────┘
+       └──────────┬────────────┘
+                  │ (both complete before proceeding)
+                  ▼
+       ┌──────────────────────┐
+       │    Itinerary Agent   │
+       │ - Day-by-day schedule│
+       │ - Route optimization │
+       │ - Timing between stops│
+       └──────────┬───────────┘
+                  │
+     ┌────────────┴────────────┐
+     │ (parallel dispatch)     │
+     ▼                         ▼
+┌──────────────────┐  ┌─────────────────────────┐
+│ Booking Assistant│  │  Local Experience Agent  │
+│ - Ranked flights │  │  - Food, events, gems    │
+│ - Ranked hotels  │  │  - Personalized per      │
+│ - Budget-filtered│  │    user interests        │
+└──────────────────┘  └─────────────────────────┘
+          │                      │
+          └──────────┬───────────┘
+                     │
+                     ▼
+          ┌────────────────────┐
+          │   Final Output     │
+          │ (structured dict   │
+          │  → Next.js UI)     │
+          └────────────────────┘
 ```
 
-### State Object (shared across all agents)
+### State Object
 
 ```python
 class TravelState(TypedDict):
-    user_input: str              # Raw user request
-    budget: float                # Extracted budget
-    duration_days: int           # Trip duration
-    destination: str             # Confirmed destination
-    interests: list[str]         # User interests/preferences
-    travel_dates: str            # Travel dates if provided
-    
-    destination_info: dict       # Output of Destination Agent
-    budget_breakdown: dict       # Output of Budget Agent
-    itinerary: list[dict]        # Output of Itinerary Agent (day-by-day)
-    booking_options: dict        # Output of Booking Agent
-    local_experiences: list[dict]# Output of Local Experience Agent
-    
-    final_plan: str              # Assembled final output
-    errors: list[str]            # Error accumulation
+    # Input
+    user_input: str
+    conversation_history: list[str]   # Enables iterative refinement ("make it cheaper")
+
+    # Extracted by Planner
+    budget: float
+    duration_days: int
+    destination: str
+    interests: list[str]
+    travel_dates: str
+    missing_fields: list[str]         # Triggers follow-up question if non-empty
+
+    # Agent outputs
+    destination_info: dict
+    budget_breakdown: dict
+    itinerary: list[dict]
+    booking_options: dict             # Ranked by budget proximity
+    local_experiences: list[dict]
+
+    # Final structured output (not a string — renderable by frontend)
+    final_plan: dict                  # {summary, itinerary, budget, bookings, experiences}
+
+    # Reliability
+    errors: list[str]
+    retries: dict[str, int]           # {"destination": 1, "budget": 0, ...}
+
+    # Observability
+    metrics: dict                     # {latency_per_agent, cost_per_agent, completeness_score}
 ```
 
 ---
 
-## 4. Technology Stack (Final Decisions)
+## 5. Technology Stack
 
 | Component | Choice | Reason |
 |-----------|--------|--------|
-| Agent framework | **LangGraph** | Explicit state, conditional routing, debuggable |
-| Orchestrator LLM | **claude-sonnet-4-6** | Best reasoning for planning/coordination |
-| Worker LLM | **claude-haiku-4-5** | Fast, cheap for generation tasks |
-| Frontend | **Streamlit** | Fastest to build, streaming support |
-| Travel data | **Mock JSON + web search tool** | No paid API budget needed |
-| Deployment | **Render (free tier)** | Easier than Vercel for Python backend |
-| Language | **Python 3.11+** | ML standard |
+| Agent framework | **LangGraph** | Explicit state, parallel branches, async-native |
+| Orchestrator LLM | **claude-sonnet-4-6** | Reasoning for planning, validation, routing |
+| Worker LLM | **claude-haiku-4-5** | Fast + cheap for generation tasks (`max_tokens=400, temperature=0.3`) |
+| Backend | **FastAPI** | Python, streams LangGraph events via SSE |
+| Frontend | **Next.js + shadcn/ui** | Professional UI, streaming-ready, Vercel deploy |
+| Travel data | **Mock JSON + DuckDuckGo** | No paid API needed |
+| Frontend deploy | **Vercel** | One-command deploy, free tier |
+| Backend deploy | **Render (free tier)** | Python backend, Docker-based |
+| Language | **Python 3.11+ / TypeScript** | ML backend / React frontend |
 
 ---
 
-## 5. Project File Structure
+## 6. Project File Structure
 
 ```
 HCL_hackathon/
-├── app.py                          # Streamlit frontend entry point
-├── requirements.txt
-├── .env                            # API keys (ANTHROPIC_API_KEY)
-├── .env.example                    # Template (committed)
 │
-├── src/
+├── backend/
+│   ├── main.py                         # FastAPI app + /plan SSE endpoint + rate limiting
+│   ├── requirements.txt
+│   ├── .env                            # ANTHROPIC_API_KEY
+│   ├── .env.example
+│   │
 │   ├── graph/
-│   │   ├── state.py                # TravelState TypedDict definition
-│   │   ├── workflow.py             # LangGraph StateGraph assembly
-│   │   └── router.py              # Planner routing logic
+│   │   ├── state.py                    # TravelState TypedDict
+│   │   ├── workflow.py                 # LangGraph StateGraph (parallel branches)
+│   │   └── router.py                   # Conditional routing + retry logic
 │   │
 │   ├── agents/
-│   │   ├── planner.py              # Supervisor agent — parses input, routes
-│   │   ├── destination.py          # Destination research agent
-│   │   ├── budget.py               # Budget optimization agent
-│   │   ├── itinerary.py            # Day-by-day itinerary agent
-│   │   ├── booking.py              # Booking assistant agent
-│   │   └── local_experience.py     # Local experience agent
+│   │   ├── planner.py                  # Intent classification + validation + assembly
+│   │   ├── destination.py
+│   │   ├── budget.py
+│   │   ├── itinerary.py
+│   │   ├── booking.py                  # Includes ranking logic
+│   │   └── local_experience.py
 │   │
 │   ├── tools/
-│   │   ├── search.py               # Web search tool (DuckDuckGo or Tavily free)
-│   │   ├── travel_data.py          # Mock travel data (flights, hotels, costs)
-│   │   └── formatter.py            # Format final plan for display
+│   │   ├── search.py                   # DuckDuckGo free search
+│   │   ├── travel_data.py              # Mock JSON loader
+│   │   └── ranking.py                  # Hotel/flight ranking by budget proximity
 │   │
-│   └── prompts/
-│       ├── planner_prompt.py
-│       ├── destination_prompt.py
-│       ├── budget_prompt.py
-│       ├── itinerary_prompt.py
-│       ├── booking_prompt.py
-│       └── local_experience_prompt.py
+│   ├── middleware/
+│   │   ├── rate_limit.py               # SlowAPI rate limiter
+│   │   └── guard.py                    # Prompt injection detection
+│   │
+│   ├── prompts/
+│   │   └── *.py                        # One prompt file per agent
+│   │
+│   └── data/
+│       ├── destinations.json
+│       ├── hotels.json
+│       └── flights.json
 │
-└── data/
-    ├── sample_destinations.json    # Curated destination data
-    ├── sample_hotels.json          # Mock hotel options
-    └── sample_flights.json         # Mock flight options
+└── frontend/
+    ├── app/
+    │   ├── page.tsx                    # Home — chat input
+    │   ├── layout.tsx
+    │   └── api/plan/route.ts           # Next.js proxy → FastAPI (avoids CORS)
+    │
+    ├── components/
+    │   ├── ChatInput.tsx
+    │   ├── AgentProgress.tsx           # Live step tracker (6 agents)
+    │   ├── ItineraryCard.tsx
+    │   ├── BudgetBreakdown.tsx         # Chart component
+    │   ├── BookingOptions.tsx
+    │   └── MetricsBadge.tsx            # Latency + cost display
+    │
+    ├── lib/
+    │   └── stream.ts
+    │
+    └── .env.local
 ```
-
----
-
-## 6. Implementation Order (Hackathon Sequence)
-
-Build in this order — each step produces something runnable:
-
-### Phase 1 — Skeleton (get something running first)
-1. `src/graph/state.py` — define `TravelState`
-2. `src/agents/planner.py` — just parse user input, extract budget/destination/dates
-3. `src/graph/workflow.py` — single-node graph, planner only
-4. `app.py` — Streamlit text input → planner output displayed
-
-**Verify:** App runs, user types a request, planner extracts structured data.
-
-### Phase 2 — Core Agents
-5. `src/agents/destination.py` — given destination, return attractions + info
-6. `src/agents/budget.py` — given budget + destination, return breakdown
-7. `src/agents/itinerary.py` — given attractions + duration, return day-by-day plan
-8. Wire all three into the graph
-
-**Verify:** "Plan a 3-day trip to Goa for ₹15,000" returns a structured itinerary.
-
-### Phase 3 — Enrichment Agents
-9. `src/agents/booking.py` — suggest flights, hotels with mock data
-10. `src/agents/local_experience.py` — recommend food/events per destination
-11. Wire into graph
-
-**Verify:** Full 7-step workflow executes end to end.
-
-### Phase 4 — Frontend Polish
-12. Streamlit UI with:
-    - Chat-style input
-    - Streaming agent progress (show which agent is working)
-    - Formatted output: itinerary cards, budget breakdown, booking options
-13. Add error handling for bad inputs
-
-### Phase 5 — Deploy
-14. `requirements.txt`, `Dockerfile` or `render.yaml`
-15. Push to GitHub → connect to Render
 
 ---
 
 ## 7. Key Implementation Details
 
-### LangGraph Workflow Pattern
+### Planner Agent — Full Responsibilities
 
 ```python
-# workflow.py pattern
-from langgraph.graph import StateGraph, END
+def planner_agent(state: TravelState) -> TravelState:
+    # 1. Prompt injection guard
+    if is_injection(state["user_input"]):
+        state["errors"].append("Invalid input detected")
+        return state
 
-workflow = StateGraph(TravelState)
+    # 2. Intent classification + entity extraction
+    extracted = claude_sonnet.invoke(PLANNER_PROMPT.format(input=state["user_input"]))
+    state.update(extracted)  # budget, destination, dates, interests
 
-workflow.add_node("planner", planner_agent)
-workflow.add_node("destination", destination_agent)
-workflow.add_node("budget", budget_agent)
-workflow.add_node("itinerary", itinerary_agent)
-workflow.add_node("booking", booking_agent)
-workflow.add_node("local_experience", local_experience_agent)
+    # 3. Missing field detection — ask follow-up instead of guessing
+    state["missing_fields"] = [f for f in ["budget", "destination"] if not state.get(f)]
 
-workflow.set_entry_point("planner")
-workflow.add_edge("planner", "destination")
-workflow.add_edge("planner", "budget")          # destination + budget run in parallel
-workflow.add_edge("destination", "itinerary")
-workflow.add_edge("budget", "itinerary")
-workflow.add_edge("itinerary", "booking")
-workflow.add_edge("itinerary", "local_experience")
-workflow.add_edge("booking", END)
-workflow.add_edge("local_experience", END)
+    # 4. Conversation memory — support "make it cheaper" on second turn
+    state["conversation_history"].append(state["user_input"])
 
-app = workflow.compile()
-```
-
-### Agent Pattern (same for all agents)
-
-```python
-# Each agent follows this pattern
-def destination_agent(state: TravelState) -> TravelState:
-    prompt = build_destination_prompt(state)
-    response = claude_haiku.invoke(prompt)
-    state["destination_info"] = parse_response(response)
     return state
 ```
 
-### Streamlit Streaming Pattern
+### Parallel Execution (Destination + Budget simultaneously)
 
 ```python
-# app.py
-with st.spinner("Planner Agent analyzing your request..."):
-    for step in app.stream(initial_state):
-        agent_name = list(step.keys())[0]
-        st.success(f"✓ {agent_name} complete")
+# workflow.py — parallel branches reduce latency
+workflow.add_edge("planner", "destination")
+workflow.add_edge("planner", "budget")        # fires at the same time as destination
+workflow.add_edge("destination", "itinerary") # itinerary waits for BOTH
+workflow.add_edge("budget", "itinerary")
+workflow.add_edge("itinerary", "booking")
+workflow.add_edge("itinerary", "local_experience")  # also parallel
+```
+
+### Retry + Fallback per Agent
+
+```python
+# router.py
+MAX_RETRIES = 2
+
+def with_retry(agent_fn, agent_name: str):
+    def wrapper(state: TravelState) -> TravelState:
+        retries = state["retries"].get(agent_name, 0)
+        try:
+            return agent_fn(state)
+        except Exception as e:
+            if retries < MAX_RETRIES:
+                state["retries"][agent_name] = retries + 1
+                return wrapper(state)  # retry
+            else:
+                state["errors"].append(f"{agent_name} failed after {MAX_RETRIES} retries")
+                return apply_fallback(state, agent_name)  # use mock data
+    return wrapper
+```
+
+### Booking Agent — Ranked Recommendations
+
+```python
+# tools/ranking.py
+def rank_options(options: list[dict], budget: float, key: str) -> list[dict]:
+    """Rank by proximity to target budget — not just cheapest."""
+    return sorted(options, key=lambda x: abs(x[key] - budget))[:3]
+
+# booking.py
+def booking_agent(state: TravelState) -> TravelState:
+    hotels = load_hotels(state["destination"])
+    flights = load_flights(state["destination"])
+    hotel_budget = state["budget_breakdown"].get("hotel", state["budget"] * 0.4)
+    state["booking_options"] = {
+        "hotels": rank_options(hotels, hotel_budget, "price_per_night"),
+        "flights": rank_options(flights, state["budget_breakdown"].get("transport", 0), "price"),
+    }
+    return state
+```
+
+### Metrics Collection
+
+```python
+# Every agent wrapper records latency + estimated token cost
+import time
+
+def tracked(agent_fn, agent_name: str):
+    def wrapper(state: TravelState) -> TravelState:
+        start = time.time()
+        state = agent_fn(state)
+        state["metrics"]["latency"][agent_name] = round(time.time() - start, 2)
+        return state
+    return wrapper
+```
+
+### Structured Final Output (dict, not string)
+
+```python
+# planner.py — final assembly
+state["final_plan"] = {
+    "summary": f"{state['duration_days']}-day trip to {state['destination']}",
+    "itinerary": state["itinerary"],          # list of day objects
+    "budget": state["budget_breakdown"],
+    "bookings": state["booking_options"],
+    "experiences": state["local_experiences"],
+    "metrics": {
+        "latency_total": sum(state["metrics"]["latency"].values()),
+        "completeness_score": compute_completeness(state),
+    }
+}
+```
+
+### Security Middleware
+
+```python
+# middleware/guard.py
+INJECTION_PATTERNS = ["ignore previous", "forget instructions", "you are now", "system:"]
+
+def is_injection(text: str) -> bool:
+    return any(p in text.lower() for p in INJECTION_PATTERNS)
+
+# main.py — rate limiting via SlowAPI
+from slowapi import Limiter
+limiter = Limiter(key_func=get_remote_address)
+
+@app.post("/plan")
+@limiter.limit("5/minute")
+async def plan(request: PlanRequest): ...
+```
+
+### FastAPI SSE Streaming
+
+```python
+@app.post("/plan")
+async def plan(request: PlanRequest):
+    async def event_stream():
+        for step in langgraph_app.stream(initial_state):
+            agent_name = list(step.keys())[0]
+            yield f"data: {json.dumps({'agent': agent_name, 'output': step[agent_name]})}\n\n"
+    return StreamingResponse(event_stream(), media_type="text/event-stream")
+```
+
+### Next.js SSE Consumer
+
+```typescript
+export async function streamPlan(query: string, onChunk: (data: any) => void) {
+  const res = await fetch("/api/plan", { method: "POST", body: JSON.stringify({ query }) });
+  const reader = res.body!.getReader();
+  const decoder = new TextDecoder();
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    for (const line of decoder.decode(value).split("\n\n")) {
+      if (line.startsWith("data: ")) onChunk(JSON.parse(line.slice(6)));
+    }
+  }
+}
 ```
 
 ---
 
-## 8. Mock Data Strategy (No Paid APIs Needed)
+## 8. Implementation Order (Hackathon Sequence)
 
-Instead of real travel APIs (expensive/rate-limited), use:
-- **`data/sample_destinations.json`** — 10-15 Indian destinations with attractions, costs, best season
-- **`data/sample_hotels.json`** — budget/mid/luxury tiers per destination
-- **`data/sample_flights.json`** — approximate flight costs between major cities
-- **Web search tool** (DuckDuckGo free API) for live enrichment if needed
+### Phase 1 — Skeleton (45 min)
+1. `backend/graph/state.py` — full `TravelState` including metrics + retries
+2. `backend/agents/planner.py` — input parsing + validation + missing fields
+3. `backend/graph/workflow.py` — single-node graph, planner only
+4. `backend/main.py` — FastAPI `/plan` with SSE + rate limiter
+5. `frontend/` — `npx create-next-app`, shadcn/ui, text input → stream display
 
-This is enough for the demo. Be ready to explain in the interview: "In production, we'd swap mock data for Skyscanner API / Google Places API."
+**Verify:** App runs, planner extracts structured data, streams to browser.
+
+### Phase 2 — Core Agents (1.5 hrs)
+6. `backend/agents/destination.py`
+7. `backend/agents/budget.py`
+8. Wire both in parallel into graph + add `tracked()` + `with_retry()` wrappers
+9. `backend/agents/itinerary.py`
+
+**Verify:** "Plan a 3-day trip to Goa for ₹15,000" → structured itinerary with metrics.
+
+### Phase 3 — Enrichment Agents (1 hr)
+10. `backend/tools/ranking.py` + `backend/agents/booking.py` with ranked output
+11. `backend/agents/local_experience.py`
+12. Wire both in parallel after itinerary
+
+**Verify:** Full 7-step workflow end to end, `final_plan` is a complete dict.
+
+### Phase 4 — Frontend Polish (1.5 hrs)
+13. `AgentProgress.tsx` — live step tracker with checkmarks
+14. `ItineraryCard.tsx`, `BudgetBreakdown.tsx`, `BookingOptions.tsx`
+15. `MetricsBadge.tsx` — show total latency + completeness score
+16. Conversation memory: input box persists history, supports "make it cheaper"
+
+### Phase 5 — Deploy (30 min)
+17. `backend/` → Render (add `render.yaml`)
+18. `frontend/` → Vercel (`vercel deploy`)
 
 ---
 
-## 9. Example Full Flow
+## 9. Mock Data Strategy
+
+- **`destinations.json`** — 10-15 Indian destinations: attractions, avg costs, best season
+- **`hotels.json`** — budget/mid/luxury tiers per destination with price_per_night
+- **`flights.json`** — city pairs with approximate prices (INR)
+- **DuckDuckGo search** — live enrichment fallback if mock doesn't match destination
+
+Demo pitch: *"Mock data simulates real APIs. In production, swap for Skyscanner / Google Places — the agent interfaces stay identical."*
+
+---
+
+## 10. Example Full Flow
 
 **Input:** `"Plan a 3-day budget trip to Goa for ₹20,000 — I like beaches and local food"`
 
 | Step | Agent | Output |
 |------|-------|--------|
-| 1 | Planner | `{destination: "Goa", budget: 20000, days: 3, interests: ["beaches", "local food"]}` |
-| 2 | Destination | Baga Beach, Dudhsagar Falls, Anjuna Market, Fort Aguada |
-| 3 | Budget | `{transport: ₹6000, hotel: ₹7500, food: ₹3000, activities: ₹2500, buffer: ₹1000}` |
-| 4 | Itinerary | Day 1: North Goa beaches → Day 2: Dudhsagar + spice farm → Day 3: markets + south Goa |
-| 5 | Booking | SpiceJet BOM-GOI ₹3200, Zostel Goa ₹800/night |
-| 6 | Local Experience | Fisherman's Wharf for seafood, Saturday Night Market, beach shacks |
-| 7 | Output | Complete formatted plan |
+| 1 | Planner | `{destination: "Goa", budget: 20000, days: 3, interests: ["beaches", "local food"], missing_fields: []}` |
+| 2+3 | Destination + Budget (parallel) | Attractions + `{transport: ₹6000, hotel: ₹7500, food: ₹4500, buffer: ₹2000}` |
+| 4 | Itinerary | Day 1: North Goa → Day 2: Dudhsagar → Day 3: Markets |
+| 5+6 | Booking + Local Experience (parallel) | Ranked hotels/flights + food/events list |
+| 7 | Final plan dict | Completeness: 0.94, Total latency: 4.2s |
 
 ---
 
-## 10. What to Know for Demo Day
+## 11. Demo Day — Defend These Points
 
-- Know the state that flows between agents — they will ask "what happens if an agent fails?"
-- Answer: errors accumulate in `state["errors"]`, Planner can retry or skip
-- Know why LangGraph over CrewAI (control, debuggability, production-readiness)
-- Know why Streamlit (fastest frontend for ML demos, not for production)
-- Know the upgrade path: swap mock data → real APIs, Streamlit → React frontend, Render → GCP/AWS
+| Question | Answer |
+|----------|--------|
+| "What if an agent fails?" | Retry up to 2× per agent; fallback to mock data; error logged in state |
+| "Why LangGraph?" | Explicit typed state, parallel branches, full graph visualization — debuggable in production |
+| "Why not real APIs?" | Interfaces are API-agnostic; swap mock loader for Skyscanner SDK without changing agents |
+| "How do you measure quality?" | Completeness score + latency per agent tracked in `state["metrics"]` |
+| "Can users refine the plan?" | Yes — `conversation_history` enables "make it cheaper" on follow-up turns |
+| "Is it safe?" | Rate limiting (5 req/min), prompt injection detection, input validation before any LLM call |
+| "Why Haiku for workers?" | Cost optimization — non-reasoning tasks don't need Sonnet; `max_tokens=400, temperature=0.3` |
 
 ---
 
