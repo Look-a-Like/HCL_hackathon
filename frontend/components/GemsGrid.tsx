@@ -47,9 +47,26 @@ export default function GemsGrid({ gems }: { gems: LocalGem[] }) {
                   </span>
                 </div>
                 <p style={{ fontSize: 11, color: "#6B7280", lineHeight: 1.5 }}>{gem.description}</p>
-                {gem.tip && (
-                  <p style={{ marginTop: 5, fontSize: 10, color: "#7C3AED", fontStyle: "italic" }}>💡 {gem.tip}</p>
+                {gem.estimated_cost && (
+                  <p style={{ marginTop: 3, fontSize: 10, color: "#059669", fontWeight: 600 }}>{gem.estimated_cost}</p>
                 )}
+                {gem.tip && (
+                  <p style={{ marginTop: 4, fontSize: 10, color: "#7C3AED", fontStyle: "italic" }}>💡 {gem.tip}</p>
+                )}
+                <div style={{ display: "flex", gap: 5, marginTop: 6, flexWrap: "wrap" }}>
+                  {gem.maps_url && (
+                    <a href={gem.maps_url} target="_blank" rel="noopener noreferrer"
+                       style={{ fontSize: 9, fontWeight: 700, color: "#7C3AED", background: "#EDE9FE", padding: "2px 7px", borderRadius: 999, textDecoration: "none", border: "1px solid #DDD6FE" }}>
+                      📍 Maps
+                    </a>
+                  )}
+                  {gem.tripadvisor_url && (
+                    <a href={gem.tripadvisor_url} target="_blank" rel="noopener noreferrer"
+                       style={{ fontSize: 9, fontWeight: 700, color: "#059669", background: "#ECFDF5", padding: "2px 7px", borderRadius: 999, textDecoration: "none", border: "1px solid #A7F3D0" }}>
+                      ★ TripAdvisor
+                    </a>
+                  )}
+                </div>
               </div>
             </div>
           </div>

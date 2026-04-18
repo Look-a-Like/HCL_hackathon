@@ -27,6 +27,9 @@ export interface BookingOption {
   duration?: string;
   departure?: string;
   arrival?: string;
+  book_url?: string;
+  search_url?: string;
+  maps_url?: string;
 }
 
 export interface BookingOptions {
@@ -39,6 +42,9 @@ export interface LocalGem {
   type: string;
   description: string;
   tip?: string;
+  maps_url?: string;
+  tripadvisor_url?: string;
+  estimated_cost?: string;
 }
 
 export interface ItineraryDay {

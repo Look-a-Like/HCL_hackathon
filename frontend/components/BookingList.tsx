@@ -38,11 +38,21 @@ function FlightCard({ flight, i }: { flight: BookingOptions["flights"][0]; i: nu
         </div>
       )}
 
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
         <span style={{ fontSize: 15, fontWeight: 800, color: "#1E1B4B" }}>₹{flight.price?.toLocaleString("en-IN")}</span>
-        <button className="btn-primary" style={{ padding: "8px 16px", fontSize: 12 }}>
-          Confirm Flight →
-        </button>
+        <div style={{ display: "flex", gap: 6 }}>
+          {flight.search_url && (
+            <a href={flight.search_url} target="_blank" rel="noopener noreferrer"
+               style={{ padding: "7px 12px", borderRadius: 8, fontSize: 11, fontWeight: 600, background: "rgba(124,58,237,0.08)", color: "#7C3AED", border: "1px solid rgba(124,58,237,0.2)", textDecoration: "none" }}>
+              Skyscanner
+            </a>
+          )}
+          {flight.book_url && (
+            <a href={flight.book_url} target="_blank" rel="noopener noreferrer" className="btn-primary" style={{ padding: "7px 14px", fontSize: 11 }}>
+              Book →
+            </a>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -73,7 +83,21 @@ function HotelCard({ hotel, i }: { hotel: BookingOptions["hotels"][0]; i: number
       </div>
       <div style={{ textAlign: "right", flexShrink: 0 }}>
         <p style={{ fontSize: 15, fontWeight: 800, color: "#1E1B4B" }}>₹{hotel.price?.toLocaleString("en-IN")}</p>
-        <p style={{ fontSize: 10, color: "#9CA3AF" }}>/night</p>
+        <p style={{ fontSize: 10, color: "#9CA3AF", marginBottom: 6 }}>/night</p>
+        <div style={{ display: "flex", gap: 4, justifyContent: "flex-end" }}>
+          {hotel.maps_url && (
+            <a href={hotel.maps_url} target="_blank" rel="noopener noreferrer"
+               style={{ padding: "5px 8px", borderRadius: 6, fontSize: 10, fontWeight: 600, background: "rgba(124,58,237,0.08)", color: "#7C3AED", border: "1px solid rgba(124,58,237,0.2)", textDecoration: "none" }}>
+              Maps
+            </a>
+          )}
+          {hotel.book_url && (
+            <a href={hotel.book_url} target="_blank" rel="noopener noreferrer"
+               style={{ padding: "5px 8px", borderRadius: 6, fontSize: 10, fontWeight: 600, background: "linear-gradient(135deg,#7C3AED,#8B5CF6)", color: "white", textDecoration: "none" }}>
+              Book
+            </a>
+          )}
+        </div>
       </div>
     </div>
   );
